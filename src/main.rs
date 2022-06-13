@@ -1,6 +1,8 @@
 mod commands;
+mod cfg;
 
 use clap::Parser;
+use cfg::Config;
 
 use commands::Commands;
 
@@ -15,6 +17,11 @@ struct Cli {
 
 fn main() {
     let cli = Cli::parse();
+    let config = Config::init().unwrap();
+
+    if config.debug {
+        println!("Configuration: {:?}", config);
+    }
 
     match &cli.command {
         Commands::List {} => commands::list::run(),
