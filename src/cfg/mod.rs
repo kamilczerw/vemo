@@ -5,8 +5,7 @@ use config::{Config as Cfg, ConfigError, Source, ValueKind};
 
 #[derive(Debug, Clone)]
 pub struct AppConfig {
-    pub path: Option<String>,
-    pub ignore: bool
+    pub path: Option<String>
 }
 
 #[derive(Debug, Clone)]
@@ -50,17 +49,22 @@ impl Config {
     }
 
     fn get_app_configs(settings: Cfg) -> Result<HashMap<String, AppConfig>, ConfigError> {
-        let app_configs: HashMap<String, AppConfig> = HashMap::new();
+        let mut app_configs: HashMap<String, AppConfig> = HashMap::new();
 
         for (key, value) in settings.collect().unwrap() {
-            match value.kind {
+            let path= match value.kind {
                 ValueKind::Table(t) => {
+                    let path = t.get("path").map(|v| {
+                        v.clone().into_string().map(Some)
+                    }).unwrap_or(Ok(None));
 
-                    let path = t.get("path").map(|v| v.clone().into_string().unwrap()); // TODO: handle it properly
-                    println!("path: {:?}", path)
+                    path
                 }
-                _ => {}
-            }
+                _ => { Ok(None) }
+            };
+
+            let app_config = AppConfig { path: path? };
+            app_configs.insert(key, app_config);
         }
 
         return Ok(app_configs)

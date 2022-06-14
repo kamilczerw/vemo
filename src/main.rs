@@ -23,7 +23,7 @@ fn app() -> Result<(), AppError> {
     let config = Config::init()?;
 
     if config.debug {
-        println!("Configuration: {:?}", config);
+        println!("Configuration: {:#?}", config);
     }
 
     let result: () = match &cli.command {
