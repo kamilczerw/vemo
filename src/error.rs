@@ -20,8 +20,12 @@ impl From<ConfigError> for AppError {
 }
 
 impl From<CommandError> for AppError {
-    fn from(_: CommandError) -> Self {
+    fn from(err: CommandError) -> Self {
+        match err {
+            CommandError::ParseError(message) => { AppError { message, code: 1 } }
+            CommandError::ShellError(message) => { AppError { message, code: 1 } }
+        }
         // TODO: implement better mapping for command errors
-        AppError { message: format!(""), code: 1 }
+        // AppError { message: format!(""), code: 1 }
     }
 }

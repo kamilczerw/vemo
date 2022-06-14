@@ -1,3 +1,5 @@
+extern crate core;
+
 mod commands;
 mod cfg;
 mod error;
@@ -27,9 +29,9 @@ fn app() -> Result<(), AppError> {
     }
 
     let result: () = match &cli.command {
-        Commands::List {} => commands::list::run()?,
+        Commands::List {} => commands::list::run(config)?,
         Commands::Bump { name, component } =>
-            commands::bump::run(name, component)?
+            commands::bump::run(config, name, component)?
     };
 
     Ok(result)

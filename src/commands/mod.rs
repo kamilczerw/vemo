@@ -1,6 +1,7 @@
 pub mod bump;
 pub mod list;
 pub mod error;
+mod shell;
 
 use clap::{ArgEnum, Subcommand};
 
