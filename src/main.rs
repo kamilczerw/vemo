@@ -1,8 +1,11 @@
 mod commands;
 mod cfg;
+mod errors;
 
+use std::process::exit;
 use clap::Parser;
 use cfg::Config;
+use errors::AppError;
 
 use commands::Commands;
 
@@ -15,17 +18,26 @@ struct Cli {
     command: Commands,
 }
 
-fn main() {
+fn app() -> Result<(), AppError> {
     let cli = Cli::parse();
-    let config = Config::init().unwrap();
+    let config = Config::init()?;
 
     if config.debug {
         println!("Configuration: {:?}", config);
     }
 
-    match &cli.command {
+    let result = match &cli.command {
         Commands::List {} => commands::list::run(),
         Commands::Bump { name, component } =>
             commands::bump::run(name, component)
-    }
+    };
+
+    Ok(result)
+}
+
+fn main() {
+    app().unwrap_or_else(|error| {
+        println!("{}", error.message);
+        exit(error.code)
+    })
 }
