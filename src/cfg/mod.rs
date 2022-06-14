@@ -52,19 +52,17 @@ impl Config {
         let mut app_configs: HashMap<String, AppConfig> = HashMap::new();
 
         for (key, value) in settings.collect().unwrap() {
-            let path= match value.kind {
+            match value.kind {
                 ValueKind::Table(t) => {
                     let path = t.get("path").map(|v| {
                         v.clone().into_string().map(Some)
                     }).unwrap_or(Ok(None));
 
-                    path
+                    let app_config = AppConfig { path: path? };
+                    app_configs.insert(key, app_config);
                 }
-                _ => { Ok(None) }
+                _ => { }
             };
-
-            let app_config = AppConfig { path: path? };
-            app_configs.insert(key, app_config);
         }
 
         return Ok(app_configs)
