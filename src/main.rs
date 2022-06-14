@@ -1,11 +1,11 @@
 mod commands;
 mod cfg;
-mod errors;
+mod error;
 
 use std::process::exit;
 use clap::Parser;
 use cfg::Config;
-use errors::AppError;
+use error::AppError;
 
 use commands::Commands;
 
@@ -26,10 +26,10 @@ fn app() -> Result<(), AppError> {
         println!("Configuration: {:?}", config);
     }
 
-    let result = match &cli.command {
-        Commands::List {} => commands::list::run(),
+    let result: () = match &cli.command {
+        Commands::List {} => commands::list::run()?,
         Commands::Bump { name, component } =>
-            commands::bump::run(name, component)
+            commands::bump::run(name, component)?
     };
 
     Ok(result)

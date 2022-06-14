@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use std::env;
 use std::path::Path;
-use config::{ConfigError, Source, ValueKind, Config as Cfg};
+use config::{Config as Cfg, ConfigError, Source, ValueKind};
 
 #[derive(Debug, Clone)]
 pub struct AppConfig {
@@ -35,7 +35,7 @@ impl Config {
             ConfigError::Message(String::from("Failed to open current directory."))
         })?;
 
-        let config_path = format!("{}/.mov.toml", current_dir.display());
+        let config_path = format!("{}/.vemo.toml", current_dir.display());
         let config_file = Path::new(&config_path);
 
         let settings = config::Config::builder();
@@ -45,7 +45,7 @@ impl Config {
         } else { settings };
 
         return settings
-            .add_source(config::Environment::with_prefix("MOV"))
+            .add_source(config::Environment::with_prefix("VEMO"))
             .build();
     }
 
@@ -55,6 +55,7 @@ impl Config {
         for (key, value) in settings.collect().unwrap() {
             match value.kind {
                 ValueKind::Table(t) => {
+
                     let path = t.get("path").map(|v| v.clone().into_string().unwrap()); // TODO: handle it properly
                     println!("path: {:?}", path)
                 }

@@ -1,7 +1,8 @@
 pub mod bump;
 pub mod list;
+pub mod error;
 
-use clap::{Subcommand, ArgEnum};
+use clap::{ArgEnum, Subcommand};
 
 #[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, ArgEnum)]
 pub enum Component {
