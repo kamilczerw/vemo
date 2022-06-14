@@ -16,4 +16,15 @@ impl Git {
             Ok(String::from_utf8(output.stdout)?)
         }
     }
+
+    pub fn fetch() -> Result<(), CommandError> {
+        // TODO: cache the result so the command runs faster most of the time and it only fetches
+        //       the tags from after certain amount of time.
+        Self::run(vec!["fetch", "--all", "--tags"]).map(|_| ())
+    }
+
+    pub fn get_tags(filter: String) -> Result<String, CommandError> {
+        Self::fetch()?;
+        Self::run(vec!["tag", "-l", filter.as_str(), "--sort=-v:refname"])
+    }
 }

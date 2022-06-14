@@ -8,3 +8,5 @@ edition = "2021"
 [dependencies]
 clap = { version = "3.1.18", features = ["derive"] }
 config = "0.13.1"
+regex = "1.5.6"
+semver = "1.0.10"
