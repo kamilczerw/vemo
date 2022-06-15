@@ -1,6 +1,7 @@
 use std::str::Utf8Error;
 use std::string::FromUtf8Error;
 
+#[derive(Debug)]
 pub enum CommandError {
     /// Returned when parsing of shell command output cannot be converted to string
     ParseError(String),
