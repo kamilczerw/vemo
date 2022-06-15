@@ -11,7 +11,9 @@ use error::AppError;
 
 use commands::Commands;
 
-/// Manage your monorepo versions with ease
+/// Manage your monorepo versions with ease.
+///
+///
 #[derive(Parser)]
 #[clap(author, version, about, long_about = None)]
 #[clap(propagate_version = true)]

@@ -23,8 +23,13 @@ impl Git {
         Self::run(vec!["fetch", "--all", "--tags"]).map(|_| ())
     }
 
+    /// List git tags ordered by version descending
     pub fn get_tags(filter: String) -> Result<String, CommandError> {
         Self::fetch()?;
         Self::run(vec!["tag", "-l", filter.as_str(), "--sort=-v:refname"])
     }
+
+    // pub fn get_latest_tag(format: String) -> Result<Option<String>, CommandError> {
+    //     Self::get_tags(format).map(|tag| )
+    // }
 }
