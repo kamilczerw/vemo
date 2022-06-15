@@ -19,7 +19,7 @@ impl GitCli for ValidGitCli {
 #[test]
 fn get_tags_should_extract_tags_sorted_by_version_descending() {
     let git = Git::new(Box::new(ValidGitCli {}), "{app_name}/v{version}".to_string());
-    let tags = git.get_tags().unwrap();
+    let tags = git.get_tags(None).unwrap();
 
     assert_eq!(tags.len(), 5);
     assert_eq!(tags[0], Tag::new("gateway/v1.0.0", Version::parse("1.0.0").unwrap(), "gateway"));
@@ -37,4 +37,12 @@ fn get_latest_tags_should_extract_only_latest_tags_for_all_apps() {
     assert_eq!(tags.len(), 2);
     assert_eq!(tags[0], Tag::new("gateway/v1.0.0", Version::parse("1.0.0").unwrap(), "gateway"));
     assert_eq!(tags[1], Tag::new("app/v1.0.0", Version::parse("1.0.0").unwrap(), "app"));
+}
+
+#[test]
+fn get_latest_tag_for_specific_app_should_return_a_tag() {
+    let git = Git::new(Box::new(ValidGitCli {}), "{app_name}/v{version}".to_string());
+    let tag = git.find_latest_tag("gateway").unwrap();
+
+    assert_eq!(tag, Some(Tag::new("gateway/v1.0.0", Version::parse("1.0.0").unwrap(), "gateway")));
 }
