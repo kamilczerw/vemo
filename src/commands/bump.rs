@@ -27,8 +27,8 @@ pub fn run(config: Config, name: &String, component: &Component) -> Result<(), C
     let body = String::from("This is\na multi line\n string ");
     let release_name = format!("{} - v{}", &name, &new_tag.version);
 
-    println!("  {} {}", "name:".bold(), release_name.bright_green().bold());
-    println!("  {}  {}", "tag:".bold(), format!("{}", new_tag).bright_green().bold());
+    println!("  {} {}", "name:".bold(), &release_name.bright_green().bold());
+    println!("  {}  {}", "tag:".bold(), format!("{}", &new_tag).bright_green().bold());
     println!("  {}", "body:".bold());
     for line in body.split("\n").into_iter() {
         println!("    {}", line);
@@ -41,8 +41,14 @@ pub fn run(config: Config, name: &String, component: &Component) -> Result<(), C
     let s = s.replace("\n", "");
 
     if &s == "y" || &s == "Y" {
+        release(release_name, new_tag, body)?;
         println!("Applying changes")
     }
+
+    Ok(())
+}
+
+fn release(name: String, tag: Tag, body: String) -> Result<(), CommandError> {
 
     Ok(())
 }

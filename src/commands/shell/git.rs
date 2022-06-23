@@ -14,6 +14,59 @@ pub struct Tag {
     pub app_name: String
 }
 
+#[derive(Debug, Clone, Eq, Ord, PartialEq, PartialOrd)]
+pub struct Repo {
+    pub git_url: String,
+    pub repo_name: String,
+    pub provider: GitProvider,
+    pub repo_type: RepoType
+}
+
+#[derive(Debug, Clone, Eq, Ord, PartialEq, PartialOrd)]
+pub enum RepoType {
+    Ssh,
+    Http
+}
+
+#[derive(Debug, Clone, Eq, Ord, PartialEq, PartialOrd)]
+pub enum GitProvider {
+    Github,
+    Gitlab,
+    Bitbucket,
+    Unknown
+}
+
+impl GitProvider {
+    pub fn env_name(&self) -> String {
+        match self {
+            GitProvider::Github => "VEMO_GITHUB_TOKEN".to_string(),
+            GitProvider::Gitlab => "VEMO_GITLAB_TOKEN".to_string(),
+            GitProvider::Bitbucket => "VEMO_BITBUCKET_TOKEN".to_string(),
+            GitProvider::Unknown => "".to_string()
+        }
+    }
+
+    pub fn setting_name(&self) -> String {
+        match self {
+            GitProvider::Github => "github.token".to_string(),
+            GitProvider::Gitlab => "gitlab.token".to_string(),
+            GitProvider::Bitbucket => "bitbucket.token".to_string(),
+            GitProvider::Unknown => "".to_string()
+        }
+    }
+}
+
+impl Display for GitProvider {
+    fn fmt(&self, f: &mut Formatter) -> std::fmt::Result {
+        match self {
+            GitProvider::Github => write!(f, "github"),
+            GitProvider::Gitlab => write!(f, "gitlab"),
+            GitProvider::Bitbucket => write!(f, "bitbucket"),
+            GitProvider::Unknown => write!(f, "unknown")
+        }
+    }
+}
+
 impl Display for Tag {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", self.raw)
@@ -106,6 +159,51 @@ impl Git {
         let tag = tags.first();
 
         Ok(tag.map(|t| t.clone()))
+    }
+
+    pub fn get_config(&self, key: &str) -> Result<String, CommandError> {
+        self.git.get_config(key)
+    }
+
+    pub fn get_repo_info(&self) -> Result<Repo, CommandError> {
+        let repo_url = self.get_config("remote.origin.url")?;
+        let repo_url = repo_url.as_str();
+        let repo_url = repo_url.strip_suffix("\n").unwrap_or(repo_url);
+
+        let ssh_re = Regex::new(r"^git@(?P<provider>[a-zA-Z0-9._-]+):(?P<repo>.*)\.git$").unwrap();
+        let http_re = Regex::new(r"^(https?://)?(?P<provider>[a-zA-Z0-9._-]+)/(?P<repo>.*)\.git$").unwrap();
+
+        let (repo_type, caps) = if ssh_re.is_match(repo_url) {
+            (RepoType::Ssh, ssh_re.captures(repo_url).unwrap())
+        } else if http_re.is_match(repo_url) {
+            (RepoType::Http, http_re.captures(repo_url).unwrap())
+        } else {
+            return Err(CommandError::ParseError(format!("Invalid repo url {}", repo_url).to_string()))
+        };
+
+        let provider = match caps.name("provider") {
+            Some(provider) => {
+                match provider.as_str() {
+                    "github.com" => GitProvider::Github,
+                    "gitlab.com" => GitProvider::Gitlab,
+                    "bitbucket.com" => GitProvider::Bitbucket,
+                    _ => GitProvider::Unknown
+                }
+            }
+            None => GitProvider::Unknown
+        };
+
+        let repo_name = match caps.name("repo") {
+            Some(repo) => repo.as_str().to_string(),
+            None => return Err(CommandError::ParseError("Failed to parse repo name".to_string()))
+        };
+
+        Ok(Repo {
+            git_url: repo_url.to_string(),
+            provider,
+            repo_name,
+            repo_type
+        })
     }
 
     fn parse_tags(raw_tags: String, format: String) -> Vec<Tag> {

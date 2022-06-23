@@ -12,6 +12,7 @@ pub struct AppConfig {
 pub struct Config {
     pub format: String,
     pub debug: bool,
+    pub gh_token: Option<String>,
     pub apps: HashMap<String, AppConfig>
 }
 
@@ -23,10 +24,14 @@ impl Config {
             .unwrap_or(String::from("{app_name}/v{version}"));
 
         let debug = settings.get_bool("debug").unwrap_or(false);
+        let gh_token = match settings.get_string("github_token") {
+            Ok(token) => Some(token),
+            _ => None
+        };
 
         let app_configs = Self::get_app_configs(settings)?;
 
-        Ok(Config { format, debug, apps: app_configs })
+        Ok(Config { format, debug, gh_token, apps: app_configs })
     }
 
     fn read_config() -> Result<Cfg, ConfigError> {
@@ -34,6 +39,7 @@ impl Config {
             ConfigError::Message(String::from("Failed to open current directory."))
         })?;
 
+        // TODO: add support for ~/.vemo/config.toml
         let config_path = format!("{}/.vemo.toml", current_dir.display());
         let config_file = Path::new(&config_path);
 

@@ -11,6 +11,10 @@ impl GitCli for ShellGit {
         Self::fetch()?;
         Self::run(vec!["tag", "-l", filter.as_str(), "--sort=-v:refname"])
     }
+
+    fn get_config(&self, key: &str) -> Result<String, CommandError> {
+        Self::run(vec!["config", "--get", key])
+    }
 }
 
 impl ShellGit {

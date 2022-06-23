@@ -1,5 +1,6 @@
 use config::ConfigError;
 use crate::commands::error::CommandError;
+use crate::git::client::error::GitClientError;
 
 pub struct AppError {
     pub message: String,
@@ -27,5 +28,18 @@ impl From<CommandError> for AppError {
         }
         // TODO: implement better mapping for command errors
         // AppError { message: format!(""), code: 1 }
+    }
+}
+
+impl From<GitClientError> for AppError {
+    fn from(err: GitClientError) -> Self {
+        match err {
+            GitClientError::UnexpectedError(message) => { AppError { message, code: 1 } }
+            GitClientError::MissingToken(provider) => { AppError {
+                message: format!("Missing token for a git provider, please set environment variable \"{}\", or add setting \"{}\" to ~/.vemo/config.toml", provider.env_name(), provider.setting_name()).to_string(),
+                code: 1
+            } }
+            GitClientError::UnsupportedProvider(provider) => { AppError { message: format!("Unsupported provider: {}", provider), code: 1 } }
+        }
     }
 }
