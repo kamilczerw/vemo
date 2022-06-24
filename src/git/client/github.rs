@@ -5,10 +5,10 @@ use crate::git::GitClient;
 use crate::commands::shell::git::{Git, Repo};
 
 pub struct GithubClient {
-    token: String,
-    http: Client,
-    api: String,
-    repo: String
+    pub token: String,
+    pub http: Client,
+    pub api: String,
+    pub repo: String
 }
 
 impl GithubClient {
@@ -29,6 +29,19 @@ impl GithubClient {
 impl GitClient for GithubClient {
     /// Create a new Github release
     fn create_release(&self) -> Result<(), GitClientError> {
+        let res = self.http.post(&format!("{}/repos/{}/releases", self.api, self.repo))
+            .header("Authorization", format!("token {}", self.token))
+            .header("Content-Type", "application/json")
+            .body(r#"{
+                "tag_name": "v1.0.0",
+                "target_commitish": "master",
+                "name": "v1.0.0",
+                "body": "Release v1.0.0",
+                "draft": false,
+                "prerelease": false
+            }"#)
+            .send()
+            .map_err(|e| GitClientError::RequestError(e))?;
         // let res = &self.http.post(&self.url)
         //     .body("the exact body that is sent")
         //     .send()?;

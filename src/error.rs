@@ -40,6 +40,7 @@ impl From<GitClientError> for AppError {
                 code: 1
             } }
             GitClientError::UnsupportedProvider(provider) => { AppError { message: format!("Unsupported provider: {}", provider), code: 1 } }
+            GitClientError::RequestError(err) => { AppError { message: format!("{}", err), code: 1 } }
         }
     }
 }

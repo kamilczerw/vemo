@@ -43,7 +43,7 @@ fn app() -> Result<(), AppError> {
     let result: () = match &cli.command {
         Commands::List {} => commands::list::run(config)?,
         Commands::Bump { name, component } =>
-            commands::bump::run(config, name, component)?
+            commands::bump::run(config, name, component, git_client)?
     };
 
     Ok(result)
@@ -51,7 +51,7 @@ fn app() -> Result<(), AppError> {
 
 fn main() {
     app().unwrap_or_else(|error| {
-        println!("{}", error.message);
+        println!("Error: {}", error.message);
         exit(error.code)
     })
 }

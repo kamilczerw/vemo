@@ -10,4 +10,7 @@ pub enum GitClientError {
 
     /// Git provider is not supported
     UnsupportedProvider(GitProvider),
+
+    /// Git provider API request error
+    RequestError(reqwest::Error),
 }

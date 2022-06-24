@@ -5,8 +5,9 @@ use crate::commands::Component;
 use crate::commands::error::CommandError;
 use crate::commands::shell::git::{Git, Tag};
 use colored::Colorize;
+use crate::git::GitClient;
 
-pub fn run(config: Config, name: &String, component: &Component) -> Result<(), CommandError>  {
+pub fn run(config: Config, name: &String, component: &Component, git_client: Box<dyn GitClient>) -> Result<(), CommandError>  {
     let format = config.format;
     let git = Git::init(format.clone());
 
