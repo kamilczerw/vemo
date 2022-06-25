@@ -38,6 +38,8 @@ fn app() -> Result<(), AppError> {
 
     let repo_info = git.get_repo_info()?;
 
+    // TODO: if the git client is not supported, the program should not fail
+    //       There should still be possibility to create a tag without a git provider
     let git_client = git::client::new_client(&config, repo_info)?;
 
     let result: () = match &cli.command {

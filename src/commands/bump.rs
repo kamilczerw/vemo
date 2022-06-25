@@ -42,8 +42,8 @@ pub fn run(config: Config, name: &String, component: &Component, git_client: Box
     let s = s.replace("\n", "");
 
     if &s == "y" || &s == "Y" {
-        release(release_name, new_tag, body)?;
-        println!("Applying changes")
+        println!("Applying changes");
+        git_client.create_release(release_name, new_tag, body)?;
     }
 
     Ok(())
