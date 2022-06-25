@@ -10,9 +10,11 @@ Vemo stands for **Ve**rsioning of **mo**norepo. It is a simple cli tool written 
 
 ## 📋 Configuration
 
-`vemo` can be configured using `.vemo.toml` file in the main directory of your repo and by env variables.
+`vemo` can be configured using `toml` files and by env variables.
 
-### `.vemo.toml`
+The configuration is read sequentially, starting with `~/.config/vemo/config.toml`, then `.vemo.toml` located in the root of the repo, and finally environment variables.
+
+### `toml` file
 
 If the `.vemo.toml` file does not exist in the repo, default values will be used. To see what are the values, have a look at the comments in the file below.
 

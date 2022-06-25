@@ -16,6 +16,14 @@ pub struct Tag {
 }
 
 #[derive(Debug, Clone, Eq, Ord, PartialEq, PartialOrd)]
+pub struct Commit {
+    pub hash: String,
+    pub message: String,
+    pub author: String,
+    pub date: String
+}
+
+#[derive(Debug, Clone, Eq, Ord, PartialEq, PartialOrd)]
 pub struct Repo {
     pub git_url: String,
     pub repo_name: String,
@@ -209,6 +217,14 @@ impl Git {
             repo_name,
             repo_type
         })
+    }
+
+    pub fn get_commits(&self, tag: Option<Tag>, dir: &str) -> Vec<Commit> {
+        // self.git.get_commits(tag.formatted(), dir)?
+        //     .into_iter()
+        //     .map(|c| Commit::new(c))
+        //     .collect()
+        todo!("get_commits")
     }
 
     fn parse_tags(raw_tags: String, format: String) -> Vec<Tag> {

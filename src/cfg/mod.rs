@@ -34,6 +34,12 @@ impl Config {
         Ok(Config { format, debug, gh_token, apps: app_configs })
     }
 
+    pub fn app_path(&self, app_name: &str) -> Option<String> {
+        self.apps.get(app_name)
+            .map(|app| app.path.clone())
+            .unwrap_or(None)
+    }
+
     fn read_config() -> Result<Cfg, ConfigError> {
         let current_dir = env::current_dir().map_err(|_| {
             ConfigError::Message(String::from("Failed to open current directory."))
@@ -41,9 +47,8 @@ impl Config {
 
         let home_dir = dirs::home_dir()
             .ok_or(ConfigError::Message(String::from("Failed to get home directory.")))?;
-        let home_config = home_dir.join(".vemo/config.toml");
+        let home_config = home_dir.join(".config/vemo/config.toml");
 
-        // TODO: add support for ~/.vemo/config.toml
         let config_path = format!("{}/.vemo.toml", current_dir.display());
         let config_file = Path::new(&config_path);
 

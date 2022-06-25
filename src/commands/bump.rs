@@ -8,20 +8,24 @@ use colored::Colorize;
 use crate::git::GitClient;
 
 pub fn run(config: Config, name: &String, component: &Component, git_client: Box<dyn GitClient>) -> Result<(), CommandError>  {
-    let format = config.format;
+    let format = config.format.clone();
     let git = Git::init(format.clone());
 
     let default_version = Version::parse("0.1.0").unwrap();
 
-    let new_tag = match git.find_latest_tag(name)? {
+    let (latest_tag, new_tag) = match git.find_latest_tag(name)? {
         None => {
             if config.debug {
                 println!("Version of {} not found, new tag with default version ({}) version will be created", name, default_version);
             }
-            Tag::new_with_format(&format, name, default_version)
+            (None, Tag::new_with_format(&format, name, default_version))
         }
-        Some(tag) => tag.bump(component)
+        Some(tag) => (Some(tag.clone()), tag.bump(component))
     };
+
+    let diff = config.app_path(name.as_str()).map(|path| {
+        git.get_commits(latest_tag, path.as_str())
+    });
 
     let _template = "## What's Changed\n\n";
     // let body = edit::edit(template).unwrap(); // TODO: handle error

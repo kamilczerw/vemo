@@ -1,6 +1,7 @@
 use std::process::Command;
 use crate::commands::error::CommandError;
 use crate::commands::shell::GitCli;
+use crate::commands::shell::git::Commit;
 
 pub struct ShellGit {}
 
@@ -14,6 +15,11 @@ impl GitCli for ShellGit {
 
     fn get_config(&self, key: &str) -> Result<String, CommandError> {
         Self::run(vec!["config", "--get", key])
+    }
+
+    fn get_commits(&self, tag: &str, dir: &str) -> Result<Vec<Commit>, CommandError> {
+        // Self::run(vec!["log", "--oneline", "--decorate", "--pretty=format:%H", &format!("HEAD..{}", tag), "--", dir])
+        todo!()
     }
 }
 

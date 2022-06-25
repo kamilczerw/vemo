@@ -1,10 +1,11 @@
 use semver::Version;
 use crate::commands::error::CommandError;
-use crate::commands::shell::git::{Git, GitProvider, RepoType, Tag};
+use crate::commands::shell::git::{Commit, Git, GitProvider, RepoType, Tag};
 use crate::commands::shell::GitCli;
 use mockall::*;
 use mockall::predicate::*;
 
+// TODO: use automock to mock GitCli
 struct  ValidGitCli {}
 impl GitCli for ValidGitCli {
     fn get_tags(&self, _filter: String) -> Result<String, CommandError> {
@@ -19,6 +20,10 @@ impl GitCli for ValidGitCli {
 
     fn get_config(&self, _key: &str) -> Result<String, CommandError> {
         Ok("git@github.com:kamilczerw/vemo.git".to_string())
+    }
+
+    fn get_commits(&self, tag: &str, dir: &str) -> Result<Vec<Commit>, CommandError> {
+        todo!()
     }
 }
 
@@ -61,6 +66,7 @@ mock! {
     impl GitCli for GC {
         fn get_config(&self, _key: &str) -> Result<String, CommandError>;
         fn get_tags(&self, _filter: String) -> Result<String, CommandError>;
+        fn get_commits(&self, _tag: &str, _dir: &str) -> Result<Vec<Commit>, CommandError>;
     }
 }
 
