@@ -3,6 +3,7 @@ use crate::commands::error::CommandError;
 use crate::git::client::error::GitClientError;
 use crate::git::GitClient;
 use crate::commands::shell::git::{Git, Repo, Tag};
+use serde_json::json;
 
 pub struct GithubClient {
     pub token: String,
@@ -28,27 +29,22 @@ impl GithubClient {
 
 impl GitClient for GithubClient {
     /// Create a new Github release
-    fn create_release(&self, name: String, tag: Tag, body: String) -> Result<(), GitClientError> {
-        let body = format!(
-            r#"{{
-                "tag_name": "{tag}",
-                "target_commitish": "master",
-                "name": "{name}",
-                "body": "{body}",
-                "draft": false,
-                "prerelease": false
-            }}"#,
-            tag = tag.
-        );
+    fn create_release(&self, name: String, tag: Tag, description: String) -> Result<(), GitClientError> {
+        let body = json!({
+            "tag_name": tag.raw,
+            "name": name,
+            "body": description,
+        });
+
         let res = self.http.post(&format!("{}/repos/{}/releases", self.api, self.repo))
             .header("Authorization", format!("token {}", self.token))
+            .header("User-Agent", "Vemo-Cli")
             .header("Content-Type", "application/json")
-            .body(body)
+            .body(serde_json::to_string(&body).unwrap())
             .send()
             .map_err(|e| GitClientError::RequestError(e))?;
-        // let res = &self.http.post(&self.url)
-        //     .body("the exact body that is sent")
-        //     .send()?;
+
+        Ok(())
     }
 }
 

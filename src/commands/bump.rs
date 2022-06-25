@@ -20,7 +20,7 @@ pub fn run(config: Config, name: &String, component: &Component, git_client: Box
             }
             Tag::new_with_format(&format, name, default_version)
         }
-        Some(tag) => tag.bump(component, &format)
+        Some(tag) => tag.bump(component)
     };
 
     let template = "## What's Changed\n\n";
@@ -29,7 +29,7 @@ pub fn run(config: Config, name: &String, component: &Component, git_client: Box
     let release_name = format!("{} - v{}", &name, &new_tag.version);
 
     println!("  {} {}", "name:".bold(), &release_name.bright_green().bold());
-    println!("  {}  {}", "tag:".bold(), format!("{}", &new_tag).bright_green().bold());
+    println!("  {}  {}", "tag:".bold(), &new_tag.formatted().bright_green().bold());
     println!("  {}", "body:".bold());
     for line in body.split("\n").into_iter() {
         println!("    {}", line);

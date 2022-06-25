@@ -22,35 +22,37 @@ impl GitCli for ValidGitCli {
     }
 }
 
+static TAG_FORMAT: &str = "{app_name}/v{version}";
+
 #[test]
 fn get_tags_should_extract_tags_sorted_by_version_descending() {
     let git = Git::new(Box::new(ValidGitCli {}), "{app_name}/v{version}".to_string());
     let tags = git.get_tags(None).unwrap();
 
     assert_eq!(tags.len(), 5);
-    assert_eq!(tags[0], Tag::new("gateway/v1.0.0", Version::parse("1.0.0").unwrap(), "gateway"));
-    assert_eq!(tags[1], Tag::new("gateway/v0.0.1", Version::parse("0.0.1").unwrap(), "gateway"));
-    assert_eq!(tags[2], Tag::new("app/v1.0.0", Version::parse("1.0.0").unwrap(), "app"));
-    assert_eq!(tags[3], Tag::new("app/v0.1.1", Version::parse("0.1.1").unwrap(), "app"));
-    assert_eq!(tags[4], Tag::new("app/v0.1.0", Version::parse("0.1.0").unwrap(), "app"));
+    assert_eq!(tags[0], Tag::new(TAG_FORMAT, "gateway/v1.0.0", Version::parse("1.0.0").unwrap(), "gateway"));
+    assert_eq!(tags[1], Tag::new(TAG_FORMAT, "gateway/v0.0.1", Version::parse("0.0.1").unwrap(), "gateway"));
+    assert_eq!(tags[2], Tag::new(TAG_FORMAT, "app/v1.0.0", Version::parse("1.0.0").unwrap(), "app"));
+    assert_eq!(tags[3], Tag::new(TAG_FORMAT, "app/v0.1.1", Version::parse("0.1.1").unwrap(), "app"));
+    assert_eq!(tags[4], Tag::new(TAG_FORMAT, "app/v0.1.0", Version::parse("0.1.0").unwrap(), "app"));
 }
 
 #[test]
 fn get_latest_tags_should_extract_only_latest_tags_for_all_apps() {
-    let git = Git::new(Box::new(ValidGitCli {}), "{app_name}/v{version}".to_string());
+    let git = Git::new(Box::new(ValidGitCli {}), TAG_FORMAT.to_string());
     let tags = git.get_latest_tags().unwrap();
 
     assert_eq!(tags.len(), 2);
-    assert_eq!(tags[0], Tag::new("gateway/v1.0.0", Version::parse("1.0.0").unwrap(), "gateway"));
-    assert_eq!(tags[1], Tag::new("app/v1.0.0", Version::parse("1.0.0").unwrap(), "app"));
+    assert_eq!(tags[0], Tag::new(TAG_FORMAT, "gateway/v1.0.0", Version::parse("1.0.0").unwrap(), "gateway"));
+    assert_eq!(tags[1], Tag::new(TAG_FORMAT, "app/v1.0.0", Version::parse("1.0.0").unwrap(), "app"));
 }
 
 #[test]
 fn get_latest_tag_for_specific_app_should_return_a_tag() {
-    let git = Git::new(Box::new(ValidGitCli {}), "{app_name}/v{version}".to_string());
+    let git = Git::new(Box::new(ValidGitCli {}), TAG_FORMAT.to_string());
     let tag = git.find_latest_tag("gateway").unwrap();
 
-    assert_eq!(tag, Some(Tag::new("gateway/v1.0.0", Version::parse("1.0.0").unwrap(), "gateway")));
+    assert_eq!(tag, Some(Tag::new(TAG_FORMAT, "gateway/v1.0.0", Version::parse("1.0.0").unwrap(), "gateway")));
 }
 
 mock! {
@@ -68,7 +70,7 @@ fn get_repo_info_with_valid_github_ssh_url_should_return_a_repo_info() {
     mock.expect_get_config()
         .returning(|_| Ok("git@github.com:kamilczerw/vemo.git".to_string()));
 
-    let git = Git::new(Box::new(mock), "{app_name}/v{version}".to_string());
+    let git = Git::new(Box::new(mock), TAG_FORMAT.to_string());
 
     let repo_info = git.get_repo_info().unwrap();
 
@@ -84,7 +86,7 @@ fn get_repo_info_with_valid_github_ssh_url_with_new_line_at_the_end_should_retur
     mock.expect_get_config()
         .returning(|_| Ok("git@github.com:kamilczerw/vemo.git\n".to_string()));
 
-    let git = Git::new(Box::new(mock), "{app_name}/v{version}".to_string());
+    let git = Git::new(Box::new(mock), TAG_FORMAT.to_string());
 
     let repo_info = git.get_repo_info().unwrap();
 
@@ -100,7 +102,7 @@ fn get_repo_info_with_valid_github_http_url_should_return_a_repo_info() {
     mock.expect_get_config()
         .returning(|_| Ok("https://github.com/kamilczerw/vemo.git".to_string()));
 
-    let git = Git::new(Box::new(mock), "{app_name}/v{version}".to_string());
+    let git = Git::new(Box::new(mock), TAG_FORMAT.to_string());
 
     let repo_info = git.get_repo_info().unwrap();
 
@@ -116,7 +118,7 @@ fn get_repo_info_with_valid_github_http_url_but_skipping_protocol_should_return_
     mock.expect_get_config()
         .returning(|_| Ok("github.com/kamilczerw/vemo.git".to_string()));
 
-    let git = Git::new(Box::new(mock), "{app_name}/v{version}".to_string());
+    let git = Git::new(Box::new(mock), TAG_FORMAT.to_string());
 
     let repo_info = git.get_repo_info().unwrap();
 
@@ -132,7 +134,7 @@ fn get_repo_info_with_invalid_http_url_should_return_a_failure() {
     mock.expect_get_config()
         .returning(|_| Ok("test://github.com/kamilczerw/vemo.git".to_string()));
 
-    let git = Git::new(Box::new(mock), "{app_name}/v{version}".to_string());
+    let git = Git::new(Box::new(mock), TAG_FORMAT.to_string());
 
     let repo_info = git.get_repo_info();
     assert!(repo_info.is_err());
@@ -144,7 +146,7 @@ fn get_repo_info_with_invalid_ssh_url_should_return_a_failure() {
     mock.expect_get_config()
         .returning(|_| Ok("ssh@github.com:kamilczerw/vemo.git".to_string()));
 
-    let git = Git::new(Box::new(mock), "{app_name}/v{version}".to_string());
+    let git = Git::new(Box::new(mock), TAG_FORMAT.to_string());
 
     let repo_info = git.get_repo_info();
     assert!(repo_info.is_err());
@@ -156,7 +158,7 @@ fn get_repo_info_with_invalid_provider_should_return_a_repo_info_with_unknown_pr
     mock.expect_get_config()
         .returning(|_| Ok("git@invalid.com:kamilczerw/vemo.git".to_string()));
 
-    let git = Git::new(Box::new(mock), "{app_name}/v{version}".to_string());
+    let git = Git::new(Box::new(mock), TAG_FORMAT.to_string());
 
     let repo_info = git.get_repo_info().unwrap();
 

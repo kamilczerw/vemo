@@ -9,6 +9,7 @@ use crate::commands::shell::GitCli;
 
 #[derive(Debug, Clone, Eq, Ord, PartialEq, PartialOrd)]
 pub struct Tag {
+    pub format: String,
     pub raw: String,
     pub version: Version,
     pub app_name: String
@@ -69,20 +70,20 @@ impl Display for GitProvider {
 
 impl Display for Tag {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.raw)
+        write!(f, "{}", self.formatted())
     }
 }
 
 impl Tag {
-    pub fn new(raw: &str, version: Version, app_name: &str) -> Tag {
-        Tag { raw: raw.to_string(), version, app_name: app_name.to_string() }
+    pub fn new(format: &str, raw: &str, version: Version, app_name: &str) -> Tag {
+        Tag { format: format.to_string(), raw: raw.to_string(), version, app_name: app_name.to_string() }
     }
 
     pub fn new_with_format(format: &str, app_name: &str, version: Version) -> Tag {
-        Tag::new(Self::raw_version(format, app_name, &version).as_str(), version, app_name)
+        Tag::new(format, Self::raw_version(format, app_name, &version).as_str(), version, app_name)
     }
 
-    pub fn bump(mut self, component: &Component, format: &str) -> Self {
+    pub fn bump(mut self, component: &Component) -> Self {
         let version = &self.version;
         let new_version = match component {
             Component::Major => Version::new(version.major + 1, 0, 0),
@@ -91,9 +92,13 @@ impl Tag {
         };
 
         self.version = new_version;
-        self.raw = Self::raw_version(format, &self.app_name, &self.version);
+        self.raw = Self::raw_version(&self.format, &self.app_name, &self.version);
 
         self
+    }
+
+    pub fn formatted(&self) -> String {
+        Self::raw_version(&self.format, &self.app_name, &self.version)
     }
 
     fn raw_version(format: &str, app_name: &str, version: &Version) -> String {
@@ -207,14 +212,14 @@ impl Git {
     }
 
     fn parse_tags(raw_tags: String, format: String) -> Vec<Tag> {
-        let format = format
+        let regex = format
             .replace("{version}", "(?P<version>[0-9]+\\.[0-9]+\\.[0-9]+)")
             .replace("{app_name}", "(?P<app_name>[0-9a-zA-Z-_]+)");
-        let format = format!("(?P<raw>{})\\n{{0,1}}", format);
+        let regex = format!("(?P<raw>{})\\n{{0,1}}", regex);
 
         let mut tags = vec![];
 
-        let re = Regex::new(format.as_str()).unwrap();
+        let re = Regex::new(regex.as_str()).unwrap();
         for caps in re.captures_iter(raw_tags.as_str()) {
             let raw = caps.name("raw").map(|m| String::from(m.as_str()));
             let app_name = caps.name("app_name")
@@ -223,7 +228,7 @@ impl Git {
 
             match (raw, app_name, version) {
                 (Some(raw), Some(app_name), Some(version)) => {
-                    tags.push(Tag::new(&raw, version, &app_name));
+                    tags.push(Tag::new(format.clone().as_str(), &raw, version, &app_name));
                 },
                 _ => {}
             }
