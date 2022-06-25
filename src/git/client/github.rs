@@ -2,7 +2,7 @@ use reqwest::blocking::Client;
 use crate::commands::error::CommandError;
 use crate::git::client::error::GitClientError;
 use crate::git::GitClient;
-use crate::commands::shell::git::{Git, Repo, Tag};
+use crate::commands::shell::git::{Repo, Tag};
 use serde_json::json;
 
 pub struct GithubClient {
@@ -36,7 +36,7 @@ impl GitClient for GithubClient {
             "body": description,
         });
 
-        let res = self.http.post(&format!("{}/repos/{}/releases", self.api, self.repo))
+        self.http.post(&format!("{}/repos/{}/releases", self.api, self.repo))
             .header("Authorization", format!("token {}", self.token))
             .header("User-Agent", "Vemo-Cli")
             .header("Content-Type", "application/json")
@@ -50,6 +50,6 @@ impl GitClient for GithubClient {
 
 impl From<GitClientError> for CommandError {
     fn from(err: GitClientError) -> Self {
-        CommandError::ParseError("Make more granular error handling!!!".to_string())
+        CommandError::GitClientError(err)
     }
 }

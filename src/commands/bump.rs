@@ -23,7 +23,7 @@ pub fn run(config: Config, name: &String, component: &Component, git_client: Box
         Some(tag) => tag.bump(component)
     };
 
-    let template = "## What's Changed\n\n";
+    let _template = "## What's Changed\n\n";
     // let body = edit::edit(template).unwrap(); // TODO: handle error
     let body = String::from("This is\na multi line\n string ");
     let release_name = format!("{} - v{}", &name, &new_tag.version);
@@ -45,11 +45,6 @@ pub fn run(config: Config, name: &String, component: &Component, git_client: Box
         println!("Applying changes");
         git_client.create_release(release_name, new_tag, body)?;
     }
-
-    Ok(())
-}
-
-fn release(name: String, tag: Tag, body: String) -> Result<(), CommandError> {
 
     Ok(())
 }
