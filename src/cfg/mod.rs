@@ -24,7 +24,7 @@ impl Config {
             .unwrap_or(String::from("{app_name}/v{version}"));
 
         let debug = settings.get_bool("debug").unwrap_or(false);
-        let gh_token = match settings.get_string("github_token") {
+        let gh_token = match settings.get_string("github.token") {
             Ok(token) => Some(token),
             _ => None
         };
@@ -39,11 +39,19 @@ impl Config {
             ConfigError::Message(String::from("Failed to open current directory."))
         })?;
 
+        let home_dir = dirs::home_dir()
+            .ok_or(ConfigError::Message(String::from("Failed to get home directory.")))?;
+        let home_config = home_dir.join(".vemo/config.toml");
+
         // TODO: add support for ~/.vemo/config.toml
         let config_path = format!("{}/.vemo.toml", current_dir.display());
         let config_file = Path::new(&config_path);
 
         let settings = config::Config::builder();
+
+        let settings = if home_config.exists() {
+            settings.add_source(config::File::from(home_config.as_path()))
+        } else { settings };
 
         let settings = if config_file.exists() {
             settings.add_source(config::File::from(config_file))
@@ -58,6 +66,10 @@ impl Config {
         let mut app_configs: HashMap<String, AppConfig> = HashMap::new();
 
         for (key, value) in settings.collect().unwrap() {
+            // If the key is github, then it should not be considered as an app config.
+            if key == "github" {
+                continue;
+            }
             match value.kind {
                 ValueKind::Table(t) => {
                     let path = t.get("path").map(|v| {
