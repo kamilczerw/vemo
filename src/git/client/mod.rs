@@ -1,4 +1,4 @@
-use crate::commands::shell::git::GitProvider;
+use crate::git::model::GitProvider;
 use crate::Config;
 use crate::git::client::error::GitClientError;
 use crate::git::GitClient;

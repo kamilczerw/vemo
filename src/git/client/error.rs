@@ -1,5 +1,5 @@
 use std::fmt::{Display, Formatter};
-use crate::commands::shell::git::GitProvider;
+use crate::git::model::GitProvider;
 
 #[derive(Debug)]
 pub enum GitClientError {
