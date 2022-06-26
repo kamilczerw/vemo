@@ -2,7 +2,7 @@ use reqwest::blocking::Client;
 use crate::commands::error::CommandError;
 use crate::git::client::error::GitClientError;
 use crate::git::GitClient;
-use crate::git::model::Repo;
+use crate::git::model::{Commit, Repo};
 use serde_json::json;
 use crate::git::model::Tag;
 
@@ -46,6 +46,15 @@ impl GitClient for GithubClient {
             .map_err(|e| GitClientError::RequestError(e))?;
 
         Ok(())
+    }
+
+    fn latest_release(&self, name: &str) -> Result<Option<Tag>, GitClientError> {
+        // TODO: use GitCli to get the latest tag
+        todo!()
+    }
+
+    fn get_changelog(&self, tag: Option<Tag>, app_name: &str) -> Result<Vec<Commit>, GitClientError> {
+        todo!()
     }
 }
 

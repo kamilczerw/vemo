@@ -15,7 +15,8 @@ pub fn run(config: Config, name: &String, component: &Component, git_client: Box
 
     let default_version = Version::parse("0.1.0").unwrap();
 
-    let (latest_tag, new_tag) = match git.find_latest_tag(name)? {
+    // let (latest_tag, new_tag) = match git.find_latest_tag(name)? {
+    let (latest_tag, new_tag) = match git_client.latest_release(name)? {
         None => {
             debug!("Version of {} not found, new tag with default version ({}) version will be created", name, default_version);
             (None, Tag::new_with_format(&format, name, default_version))
@@ -24,7 +25,8 @@ pub fn run(config: Config, name: &String, component: &Component, git_client: Box
     };
 
     let commits = config.app_path(name.as_str()).map(|path| {
-        git.get_commits(latest_tag, path.as_str())
+        // git.get_commits(latest_tag, path.as_str())
+        git_client.get_changelog(latest_tag, path.as_str())
     }).unwrap_or(Ok(vec![]));
 
     let mut body = String::from("## What's Changed\n\n");
@@ -34,8 +36,6 @@ pub fn run(config: Config, name: &String, component: &Component, git_client: Box
     }
 
 
-    // let body = edit::edit(template).unwrap(); // TODO: handle error
-    // let body = String::from("This is\na multi line\n string ");
     let release_name = format!("{} - v{}", &name, &new_tag.version);
 
     release(git_client, release_name, new_tag, body)
