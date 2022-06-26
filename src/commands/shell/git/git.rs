@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use log::debug;
 use regex::{Captures, Regex};
 use semver::Version;
 use crate::commands::error::CommandError;
@@ -30,6 +31,7 @@ impl Git {
             Some(name) => name
         };
         let filter = filter.replace("{app_name}", &app_name);
+        debug!("git tags filter: {}", filter);
         let raw_output = self.git.get_tags(filter)?;
         let mut tags = Self::parse_tags(raw_output.clone(), format);
         tags.sort();
@@ -58,6 +60,7 @@ impl Git {
 
     pub fn find_latest_tag(&self, app_name: &str) -> Result<Option<Tag>, CommandError> {
         let tags = self.get_tags(Some(app_name.to_string()))?;
+        debug!("Found {} tags for app {}, tags: {:?}", &tags.len(), app_name, &tags);
         let tag = tags.first();
 
         Ok(tag.map(|t| t.clone()))
@@ -108,12 +111,9 @@ impl Git {
         })
     }
 
-    pub fn get_commits(&self, tag: Option<Tag>, dir: &str) -> Vec<Commit> {
-        // self.git.get_commits(tag.formatted(), dir)?;
-        //     .into_iter()
-        //     .map(|c| Commit::new(c))
-        //     .collect()
-        todo!("get_commits")
+    pub fn get_commits(&self, tag: Option<Tag>, dir: &str) -> Result<Vec<Commit>, CommandError> {
+        let tag = tag.map(|t| t.formatted());
+        self.git.get_commits(tag, dir)
     }
 
     fn parse_tags(raw_tags: String, format: String) -> Vec<Tag> {

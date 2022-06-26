@@ -5,6 +5,7 @@ use crate::commands::Component;
 use crate::commands::error::CommandError;
 use crate::commands::shell::git::{Git, Tag};
 use colored::Colorize;
+use log::debug;
 use crate::git::GitClient;
 
 pub fn run(config: Config, name: &String, component: &Component, git_client: Box<dyn GitClient>) -> Result<(), CommandError>  {
@@ -15,9 +16,7 @@ pub fn run(config: Config, name: &String, component: &Component, git_client: Box
 
     let (latest_tag, new_tag) = match git.find_latest_tag(name)? {
         None => {
-            if config.debug {
-                println!("Version of {} not found, new tag with default version ({}) version will be created", name, default_version);
-            }
+            debug!("Version of {} not found, new tag with default version ({}) version will be created", name, default_version);
             (None, Tag::new_with_format(&format, name, default_version))
         }
         Some(tag) => (Some(tag.clone()), tag.bump(component))
@@ -25,7 +24,9 @@ pub fn run(config: Config, name: &String, component: &Component, git_client: Box
 
     let diff = config.app_path(name.as_str()).map(|path| {
         git.get_commits(latest_tag, path.as_str())
-    }).unwrap_or(vec![]);
+    }).unwrap_or(Ok(vec![]));
+
+    println!("{:#?}", diff.unwrap_or(vec![]));
 
     let _template = "## What's Changed\n\n";
     // let body = edit::edit(template).unwrap(); // TODO: handle error

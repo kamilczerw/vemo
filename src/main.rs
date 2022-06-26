@@ -44,7 +44,7 @@ fn app() -> Result<(), AppError> {
 
     let _handle = log4rs::init_config(log_config).unwrap();
 
-    debug!("Configuration: {:?}", config);
+    debug!("Configuration: {:#?}", config);
 
     let format = &config.format;
     let git = Git::init(format.clone());

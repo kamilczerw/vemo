@@ -22,7 +22,7 @@ impl GitCli for ValidGitCli {
         Ok("git@github.com:kamilczerw/vemo.git".to_string())
     }
 
-    fn get_commits(&self, tag: &str, dir: &str) -> Result<Vec<Commit>, CommandError> {
+    fn get_commits(&self, tag: Option<String>, dir: &str) -> Result<Vec<Commit>, CommandError> {
         todo!()
     }
 }
@@ -66,7 +66,7 @@ mock! {
     impl GitCli for GC {
         fn get_config(&self, _key: &str) -> Result<String, CommandError>;
         fn get_tags(&self, _filter: String) -> Result<String, CommandError>;
-        fn get_commits(&self, _tag: &str, _dir: &str) -> Result<Vec<Commit>, CommandError>;
+        fn get_commits(&self, _tag: Option<String>, _dir: &str) -> Result<Vec<Commit>, CommandError>;
     }
 }
 
