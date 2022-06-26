@@ -7,7 +7,7 @@ mod git_test;
 use mockall::*;
 use mockall::predicate::*;
 use crate::commands::error::CommandError;
-use crate::git::model::Commit;
+use crate::git::model::Change;
 
 #[automock]
 pub trait GitCli {
@@ -18,5 +18,5 @@ pub trait GitCli {
     fn get_config(&self, key: &str) -> Result<String, CommandError>;
 
     /// Get git commits for a given tag and directory
-    fn get_commits(&self, tag: Option<String>, dir: &str) -> Result<Vec<Commit>, CommandError>;
+    fn get_commits(&self, tag: Option<String>, dir: &str) -> Result<Vec<Change>, CommandError>;
 }

@@ -6,7 +6,7 @@ use crate::commands::error::CommandError;
 use crate::git::model::GitProvider;
 use crate::commands::shell::git_cli::ShellGit;
 use crate::commands::shell::GitCli;
-use crate::git::model::Commit;
+use crate::git::model::Change;
 use crate::git::model::{Repo, RepoType};
 use crate::git::model::Tag;
 
@@ -114,7 +114,7 @@ impl Git {
         })
     }
 
-    pub fn get_commits(&self, tag: Option<Tag>, dir: &str) -> Result<Vec<Commit>, CommandError> {
+    pub fn get_commits(&self, tag: Option<Tag>, dir: &str) -> Result<Vec<Change>, CommandError> {
         let tag = tag.map(|t| t.formatted());
         self.git.get_commits(tag, dir)
     }

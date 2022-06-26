@@ -2,7 +2,7 @@ use reqwest::blocking::Client;
 use crate::commands::error::CommandError;
 use crate::git::client::error::GitClientError;
 use crate::git::GitClient;
-use crate::git::model::{Commit, Repo};
+use crate::git::model::{Change, Repo};
 use serde_json::json;
 use crate::git::model::Tag;
 
@@ -53,7 +53,7 @@ impl GitClient for GithubClient {
         todo!()
     }
 
-    fn get_changelog(&self, tag: Option<Tag>, app_name: &str) -> Result<Vec<Commit>, GitClientError> {
+    fn get_changelog(&self, tag: Option<Tag>, app_name: &str) -> Result<Vec<Change>, GitClientError> {
         todo!()
     }
 }

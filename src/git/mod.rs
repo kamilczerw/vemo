@@ -1,6 +1,6 @@
 use model::Tag;
 use crate::git::client::error::GitClientError;
-use crate::git::model::Commit;
+use crate::git::model::Change;
 
 pub mod client;
 pub mod model;
@@ -10,5 +10,5 @@ pub trait GitClient {
 
     fn latest_release(&self, name: &str) -> Result<Option<Tag>, GitClientError>;
 
-    fn get_changelog(&self, tag: Option<Tag>, app_name: &str) -> Result<Vec<Commit>, GitClientError>;
+    fn get_changelog(&self, tag: Option<Tag>, app_name: &str) -> Result<Vec<Change>, GitClientError>;
 }

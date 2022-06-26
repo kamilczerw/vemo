@@ -1,5 +1,5 @@
 
-use crate::git::model::{Commit, Tag};
+use crate::git::model::{Change, Tag};
 use crate::commands::shell::GitCli;
 use crate::commands::shell::git_cli::ShellGit;
 use crate::git::client::error::GitClientError;
@@ -29,7 +29,7 @@ impl GitClient for LocalClient {
         todo!()
     }
 
-    fn get_changelog(&self, tag: Option<Tag>, app_name: &str) -> Result<Vec<Commit>, GitClientError> {
+    fn get_changelog(&self, tag: Option<Tag>, app_name: &str) -> Result<Vec<Change>, GitClientError> {
         todo!()
     }
 }

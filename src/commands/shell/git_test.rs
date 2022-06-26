@@ -4,7 +4,7 @@ use crate::commands::shell::git::Git;
 use crate::commands::shell::GitCli;
 use mockall::*;
 use mockall::predicate::*;
-use crate::git::model::Commit;
+use crate::git::model::Change;
 use crate::git::model::GitProvider;
 use crate::git::model::RepoType;
 use crate::git::model::Tag;
@@ -26,7 +26,7 @@ impl GitCli for ValidGitCli {
         Ok("git@github.com:kamilczerw/vemo.git".to_string())
     }
 
-    fn get_commits(&self, tag: Option<String>, dir: &str) -> Result<Vec<Commit>, CommandError> {
+    fn get_commits(&self, tag: Option<String>, dir: &str) -> Result<Vec<Change>, CommandError> {
         todo!()
     }
 }
@@ -70,7 +70,7 @@ mock! {
     impl GitCli for GC {
         fn get_config(&self, _key: &str) -> Result<String, CommandError>;
         fn get_tags(&self, _filter: String) -> Result<String, CommandError>;
-        fn get_commits(&self, _tag: Option<String>, _dir: &str) -> Result<Vec<Commit>, CommandError>;
+        fn get_commits(&self, _tag: Option<String>, _dir: &str) -> Result<Vec<Change>, CommandError>;
     }
 }
 

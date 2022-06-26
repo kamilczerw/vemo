@@ -2,9 +2,10 @@ use chrono::ParseError;
 use crate::commands::error::CommandError;
 use crate::git::model::author::Author;
 
-impl Commit {
+impl Change {
     /// Create a new commit from a git log line
     /// format:%H;%aN;%aE;%s;%cI
+    // TODO: this should be a part of the git client
     pub(crate) fn from_line(line_output: &str) -> Result<Self, CommandError> {
         let mut line = line_output.to_string();
         line.retain(|c| c != '\n');
@@ -35,7 +36,7 @@ impl From<ParseError> for CommandError {
 }
 
 #[derive(Debug, Clone, Eq, Ord, PartialEq, PartialOrd)]
-pub struct Commit {
+pub struct Change {
     pub hash: String,
     pub message: String,
     pub author: Author,
