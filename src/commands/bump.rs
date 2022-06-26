@@ -22,25 +22,33 @@ pub fn run(config: Config, name: &String, component: &Component, git_client: Box
         Some(tag) => (Some(tag.clone()), tag.bump(component))
     };
 
-    let diff = config.app_path(name.as_str()).map(|path| {
+    let commits = config.app_path(name.as_str()).map(|path| {
         git.get_commits(latest_tag, path.as_str())
     }).unwrap_or(Ok(vec![]));
 
-    println!("{:#?}", diff.unwrap_or(vec![]));
+    let mut body = String::from("## What's Changed\n\n");
 
-    let _template = "## What's Changed\n\n";
+    for commit in commits? {
+        body.push_str(&format!("* {} by {}\n", commit.message, commit.author.email));
+    }
+
+
     // let body = edit::edit(template).unwrap(); // TODO: handle error
-    let body = String::from("This is\na multi line\n string ");
+    // let body = String::from("This is\na multi line\n string ");
     let release_name = format!("{} - v{}", &name, &new_tag.version);
 
-    println!("  {} {}", "name:".bold(), &release_name.bright_green().bold());
+    release(git_client, release_name, new_tag, body)
+}
+
+fn release(git_client: Box<dyn GitClient>, name: String, new_tag: Tag, body: String) -> Result<(), CommandError> {
+    println!("  {} {}", "name:".bold(), &name.bright_green().bold());
     println!("  {}  {}", "tag:".bold(), &new_tag.formatted().bright_green().bold());
     println!("  {}", "body:".bold());
     for line in body.split("\n").into_iter() {
         println!("    {}", line);
 
     }
-    println!("{}", "Are you sure you want to create new release with [y/N]:".yellow());
+    println!("{}", "Are you sure you want to create new release with [y/e/N]:".yellow());
     let stdin = stdin();
     let mut s: String = String::new();
     stdin.read_line(&mut s).unwrap();
@@ -48,7 +56,13 @@ pub fn run(config: Config, name: &String, component: &Component, git_client: Box
 
     if &s == "y" || &s == "Y" {
         println!("Applying changes");
-        git_client.create_release(release_name, new_tag, body)?;
+        git_client.create_release(name, new_tag, body)?;
+    } else if &s == "e" || &s == "E" {
+        println!("Editing changes");
+        let edited = edit::edit(body).unwrap();
+        release(git_client, name, new_tag, edited)?;
+    } else {
+        println!("Aborting");
     }
 
     Ok(())
