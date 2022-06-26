@@ -35,6 +35,7 @@ impl GitCli for ShellGit {
             "--",
             dir
         ];
+
         Self::run(git_command).map(|output| {
             let mut commits = vec![];
             for line in output.lines() {
@@ -44,7 +45,6 @@ impl GitCli for ShellGit {
                     warn!("Failed to parse commit line. Skipping!");
                     debug!("Reason: {:?}", e);
                 });
-                // commits.push(commit);
             }
             commits
         })

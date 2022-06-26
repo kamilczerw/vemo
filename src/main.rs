@@ -34,16 +34,17 @@ fn app() -> Result<(), AppError> {
 
     let stdout = ConsoleAppender::builder().build();
     let log_config = log4rs::config::Config::builder()
-        .appender(Appender::builder().build("stdout", Box::new(stdout)))
-        .build(Root::builder().appender("stdout").build(LevelFilter::Debug))
-        .unwrap();
+        .appender(Appender::builder().build("stdout", Box::new(stdout)));
+
+    let log_config = if config.debug {
+        log_config.build(Root::builder().appender("stdout").build(LevelFilter::Debug))
+    } else {
+        log_config.build(Root::builder().appender("stdout").build(LevelFilter::Error))
+    }.unwrap();
 
     let _handle = log4rs::init_config(log_config).unwrap();
 
     debug!("Configuration: {:?}", config);
-    // if config.debug {
-    //     println!("Configuration: {:#?}", &config);
-    // }
 
     let format = &config.format;
     let git = Git::init(format.clone());
