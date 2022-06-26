@@ -25,7 +25,7 @@ pub fn run(config: Config, name: &String, component: &Component, git_client: Box
 
     let diff = config.app_path(name.as_str()).map(|path| {
         git.get_commits(latest_tag, path.as_str())
-    });
+    }).unwrap_or(vec![]);
 
     let _template = "## What's Changed\n\n";
     // let body = edit::edit(template).unwrap(); // TODO: handle error

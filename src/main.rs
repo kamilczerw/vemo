@@ -7,8 +7,11 @@ mod git;
 
 use std::process::exit;
 use clap::Parser;
+use log4rs::append::console::ConsoleAppender;
+use log4rs::config::{Appender, Root};
 use cfg::Config;
 use error::AppError;
+use log::{debug, LevelFilter};
 
 use commands::Commands;
 use crate::commands::shell::git::Git;
@@ -29,9 +32,18 @@ fn app() -> Result<(), AppError> {
     let cli = Cli::parse();
     let config = Config::init()?;
 
-    if config.debug {
-        println!("Configuration: {:#?}", &config);
-    }
+    let stdout = ConsoleAppender::builder().build();
+    let log_config = log4rs::config::Config::builder()
+        .appender(Appender::builder().build("stdout", Box::new(stdout)))
+        .build(Root::builder().appender("stdout").build(LevelFilter::Debug))
+        .unwrap();
+
+    let _handle = log4rs::init_config(log_config).unwrap();
+
+    debug!("Configuration: {:?}", config);
+    // if config.debug {
+    //     println!("Configuration: {:#?}", &config);
+    // }
 
     let format = &config.format;
     let git = Git::init(format.clone());

@@ -2,6 +2,7 @@ use std::process::Command;
 use crate::commands::error::CommandError;
 use crate::commands::shell::GitCli;
 use crate::commands::shell::git::Commit;
+use log::{debug, warn};
 
 pub struct ShellGit {}
 
@@ -18,8 +19,35 @@ impl GitCli for ShellGit {
     }
 
     fn get_commits(&self, tag: &str, dir: &str) -> Result<Vec<Commit>, CommandError> {
-        // Self::run(vec!["log", "--oneline", "--decorate", "--pretty=format:%H", &format!("HEAD..{}", tag), "--", dir])
-        todo!()
+        // %aN - Author name
+        // %aE - Author email
+        // %s - Subject
+        // %H - Hash
+        // %cI - Commit date ISO8601
+        let format = "--pretty=format:%aN;%aE;%H;%s;%cI";
+        let tags = format!("HEAD..{}", tag);
+        let git_command = vec![
+            "log",
+            "--oneline",
+            "--decorate",
+            format,
+            &tags,
+            "--",
+            dir
+        ];
+        Self::run(git_command).map(|output| {
+            let mut commits = vec![];
+            for line in output.lines() {
+                let commit = Commit::from_line(line).map(|c| {
+                    commits.push(c);
+                }).map_err(|e| {
+                    warn!("Failed to parse commit line. Skipping!");
+                    debug!("Reason: {:?}", e);
+                });
+                // commits.push(commit);
+            }
+            commits
+        })
     }
 }
 
