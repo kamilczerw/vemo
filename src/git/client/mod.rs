@@ -5,12 +5,13 @@ use crate::git::GitClient;
 
 mod github;
 pub mod error;
+mod local;
 
 /// Create a new GitClient
 pub fn new_client(config: &Config, repo: Repo) -> Result<Box<dyn GitClient>, GitClientError> {
     match repo.provider {
         GitProvider::Github => github_client(config, repo),
-        _ => Err(GitClientError::UnsupportedProvider(repo.provider))
+        _ => local_client(config, repo)
     }
 }
 
@@ -19,4 +20,9 @@ fn github_client(config: &Config, repo: Repo) -> Result<Box<dyn GitClient>, GitC
     config.gh_token.clone().map(|token| {
         github::GithubClient::new(token, repo).map(|client| Box::new(client) as Box<dyn GitClient>)
     }).ok_or(GitClientError::MissingToken(GitProvider::Github))?
+}
+
+/// Create a local GitClient
+fn local_client(config: &Config, repo: Repo) -> Result<Box<dyn GitClient>, GitClientError> {
+    Ok(Box::new(local::LocalClient::init(config.format.clone())))
 }

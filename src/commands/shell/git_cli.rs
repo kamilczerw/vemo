@@ -1,7 +1,7 @@
 use std::process::Command;
 use crate::commands::error::CommandError;
 use crate::commands::shell::GitCli;
-use crate::commands::shell::git::Commit;
+use crate::git::model::Commit;
 use log::{debug, warn};
 
 pub struct ShellGit {}

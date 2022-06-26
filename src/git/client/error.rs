@@ -6,9 +6,6 @@ pub enum GitClientError {
     /// Git provider API token is missing
     MissingToken(GitProvider),
 
-    /// Git provider is not supported
-    UnsupportedProvider(GitProvider),
-
     /// Git provider API request error
     RequestError(reqwest::Error),
 }

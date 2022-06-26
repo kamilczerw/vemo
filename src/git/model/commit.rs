@@ -1,19 +1,6 @@
 use chrono::ParseError;
 use crate::commands::error::CommandError;
-
-#[derive(Debug, Clone, Eq, Ord, PartialEq, PartialOrd)]
-pub struct Commit {
-    pub hash: String,
-    pub message: String,
-    pub author: Author,
-    pub date: chrono::DateTime<chrono::Utc>
-}
-
-#[derive(Debug, Clone, Eq, Ord, PartialEq, PartialOrd)]
-pub struct Author {
-    pub name: String,
-    pub email: String
-}
+use crate::git::model::author::Author;
 
 impl Commit {
     /// Create a new commit from a git log line
@@ -45,4 +32,12 @@ impl From<ParseError> for CommandError {
     fn from(e: ParseError) -> Self {
         CommandError::ParseError(format!("Failed to parse date, reason: {:?}", e))
     }
+}
+
+#[derive(Debug, Clone, Eq, Ord, PartialEq, PartialOrd)]
+pub struct Commit {
+    pub hash: String,
+    pub message: String,
+    pub author: Author,
+    pub date: chrono::DateTime<chrono::Utc>
 }
