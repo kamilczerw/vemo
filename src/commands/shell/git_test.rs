@@ -1,10 +1,11 @@
 use semver::Version;
 use crate::commands::error::CommandError;
-use crate::commands::shell::git::{Git, GitProvider, RepoType, Tag};
+use crate::commands::shell::git::{Git, GitProvider, RepoType};
 use crate::commands::shell::GitCli;
 use mockall::*;
 use mockall::predicate::*;
 use crate::git::model::Commit;
+use crate::git::model::Tag;
 
 // TODO: use automock to mock GitCli
 struct  ValidGitCli {}

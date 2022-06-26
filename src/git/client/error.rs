@@ -22,7 +22,6 @@ impl Display for GitClientError {
                     provider.setting_name()
                 )
             },
-            GitClientError::UnsupportedProvider(provider) => write!(f, "Unsupported provider: {}", provider),
             GitClientError::RequestError(err) => write!(f, "Request error: {}", err),
         }
     }

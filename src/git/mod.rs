@@ -1,4 +1,4 @@
-use crate::commands::shell::git::Tag;
+use model::Tag;
 use crate::git::client::error::GitClientError;
 
 pub mod client;

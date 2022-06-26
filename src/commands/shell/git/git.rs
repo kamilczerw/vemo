@@ -3,10 +3,11 @@ use log::debug;
 use regex::{Captures, Regex};
 use semver::Version;
 use crate::commands::error::CommandError;
-use crate::commands::shell::git::{GitProvider, Repo, RepoType, Tag};
+use crate::commands::shell::git::{GitProvider, Repo, RepoType};
 use crate::commands::shell::git_cli::ShellGit;
 use crate::commands::shell::GitCli;
 use crate::git::model::Commit;
+use crate::git::model::Tag;
 
 pub struct Git {
     git: Box<dyn GitCli>,

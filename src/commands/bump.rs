@@ -3,10 +3,11 @@ use semver::Version;
 use crate::cfg::Config;
 use crate::commands::Component;
 use crate::commands::error::CommandError;
-use crate::commands::shell::git::{Git, Tag};
+use crate::commands::shell::git::Git;
 use colored::Colorize;
 use log::debug;
 use crate::git::GitClient;
+use crate::git::model::Tag;
 
 pub fn run(config: Config, name: &String, component: &Component, git_client: Box<dyn GitClient>) -> Result<(), CommandError>  {
     let format = config.format.clone();

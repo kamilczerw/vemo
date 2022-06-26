@@ -1,6 +1,9 @@
 mod commit;
 mod author;
-#[cfg(test)]
-mod commit_test;
+mod tag;
 
 pub use commit::Commit;
+pub use tag::Tag;
+
+#[cfg(test)]
+mod commit_test;
