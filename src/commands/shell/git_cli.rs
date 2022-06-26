@@ -24,7 +24,7 @@ impl GitCli for ShellGit {
         // %s - Subject
         // %H - Hash
         // %cI - Commit date ISO8601
-        let format = "--pretty=format:%aN;%aE;%H;%s;%cI";
+        let format = "--pretty=format:%H;%aN;%aE;%s;%cI";
         let tags = format!("HEAD..{}", tag);
         let git_command = vec![
             "log",
