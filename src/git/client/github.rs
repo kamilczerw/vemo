@@ -2,7 +2,7 @@ use reqwest::blocking::Client;
 use crate::commands::error::CommandError;
 use crate::git::client::error::GitClientError;
 use crate::git::GitClient;
-use crate::commands::shell::git::Repo;
+use crate::git::model::Repo;
 use serde_json::json;
 use crate::git::model::Tag;
 
