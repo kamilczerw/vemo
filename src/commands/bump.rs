@@ -7,7 +7,7 @@ use crate::commands::shell::git::Git;
 use colored::Colorize;
 use log::debug;
 use crate::git::GitClient;
-use crate::git::model::Tag;
+use crate::git::model::Release;
 
 pub fn run(config: Config, name: &String, component: &Component, git_client: Box<dyn GitClient>) -> Result<(), CommandError>  {
     let format = config.format.clone();
@@ -19,7 +19,7 @@ pub fn run(config: Config, name: &String, component: &Component, git_client: Box
     let (latest_tag, new_tag) = match git_client.latest_release(name)? {
         None => {
             debug!("Version of {} not found, new tag with default version ({}) version will be created", name, default_version);
-            (None, Tag::new_with_format(&format, name, default_version))
+            (None, Release::new_with_format(&format, name, default_version))
         }
         Some(tag) => (Some(tag.clone()), tag.bump(component))
     };
@@ -41,7 +41,7 @@ pub fn run(config: Config, name: &String, component: &Component, git_client: Box
     release(git_client, release_name, new_tag, body)
 }
 
-fn release(git_client: Box<dyn GitClient>, name: String, new_tag: Tag, body: String) -> Result<(), CommandError> {
+fn release(git_client: Box<dyn GitClient>, name: String, new_tag: Release, body: String) -> Result<(), CommandError> {
     println!("  {} {}", "name:".bold(), &name.bright_green().bold());
     println!("  {}  {}", "tag:".bold(), &new_tag.formatted().bright_green().bold());
     println!("  {}", "body:".bold());

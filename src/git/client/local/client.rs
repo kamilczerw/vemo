@@ -1,5 +1,5 @@
 
-use crate::git::model::{Change, Tag};
+use crate::git::model::{Change, Release};
 use crate::commands::shell::GitCli;
 use crate::commands::shell::git_cli::ShellGit;
 use crate::git::client::error::GitClientError;
@@ -21,15 +21,19 @@ impl LocalClient {
 }
 
 impl GitClient for LocalClient {
-    fn create_release(&self, name: String, tag: Tag, body: String) -> Result<(), GitClientError> {
+    fn create_release(&self, name: String, tag: Release, body: String) -> Result<(), GitClientError> {
         todo!()
     }
 
-    fn latest_release(&self, name: &str) -> Result<Option<Tag>, GitClientError> {
+    fn latest_release(&self, name: &str) -> Result<Option<Release>, GitClientError> {
         todo!()
     }
 
-    fn get_changelog(&self, tag: Option<Tag>, app_name: &str) -> Result<Vec<Change>, GitClientError> {
+    fn get_changelog(&self, tag: Option<Release>, app_name: &str) -> Result<Vec<Change>, GitClientError> {
+        todo!()
+    }
+
+    fn list_latest_releases(&self) -> Result<Vec<Release>, GitClientError> {
         todo!()
     }
 }

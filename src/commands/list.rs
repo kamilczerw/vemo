@@ -3,11 +3,13 @@ use crate::commands::shell::git::Git;
 use crate::Config;
 
 use colored::Colorize;
+use crate::git::GitClient;
 
-pub fn run(config: Config) -> Result<(), CommandError> {
-    let git = Git::init(config.format);
+pub fn run(git: Box<dyn GitClient>) -> Result<(), CommandError> {
+    // let git = Git::init(config.format);
+    // let apps = git.get_latest_tags()?;
 
-    let apps = git.get_latest_tags()?;
+    let apps = git.list_latest_releases()?;
     if apps.is_empty() {
         println!("{}", "💩 No applications found in the repo. Try creating new one by running: "
             .yellow());

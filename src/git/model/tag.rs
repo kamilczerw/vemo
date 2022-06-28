@@ -3,20 +3,20 @@ use std::fmt::{Display, Formatter};
 use crate::commands::Component;
 
 #[derive(Debug, Clone, Eq, Ord, PartialEq, PartialOrd)]
-pub struct Tag {
-    pub format: String,
+pub struct Release {
+    format: String,
     pub raw: String,
     pub version: Version,
     pub app_name: String
 }
 
-impl Tag {
-    pub fn new(format: &str, raw: &str, version: Version, app_name: &str) -> Tag {
-        Tag { format: format.to_string(), raw: raw.to_string(), version, app_name: app_name.to_string() }
+impl Release {
+    pub fn new(format: &str, raw: &str, version: Version, app_name: &str) -> Release {
+        Release { format: format.to_string(), raw: raw.to_string(), version, app_name: app_name.to_string() }
     }
 
-    pub fn new_with_format(format: &str, app_name: &str, version: Version) -> Tag {
-        Tag::new(format, Self::raw_version(format, app_name, &version).as_str(), version, app_name)
+    pub fn new_with_format(format: &str, app_name: &str, version: Version) -> Release {
+        Release::new(format, Self::raw_version(format, app_name, &version).as_str(), version, app_name)
     }
 
     pub fn bump(mut self, component: &Component) -> Self {
@@ -45,7 +45,7 @@ impl Tag {
     }
 }
 
-impl Display for Tag {
+impl Display for Release {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", self.formatted())
     }

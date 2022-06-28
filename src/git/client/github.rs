@@ -4,7 +4,7 @@ use crate::git::client::error::GitClientError;
 use crate::git::GitClient;
 use crate::git::model::{Change, Repo};
 use serde_json::json;
-use crate::git::model::Tag;
+use crate::git::model::Release;
 
 pub struct GithubClient {
     pub token: String,
@@ -30,7 +30,7 @@ impl GithubClient {
 
 impl GitClient for GithubClient {
     /// Create a new Github release
-    fn create_release(&self, name: String, tag: Tag, description: String) -> Result<(), GitClientError> {
+    fn create_release(&self, name: String, tag: Release, description: String) -> Result<(), GitClientError> {
         let body = json!({
             "tag_name": tag.raw,
             "name": name,
@@ -48,12 +48,16 @@ impl GitClient for GithubClient {
         Ok(())
     }
 
-    fn latest_release(&self, name: &str) -> Result<Option<Tag>, GitClientError> {
+    fn latest_release(&self, name: &str) -> Result<Option<Release>, GitClientError> {
         // TODO: use GitCli to get the latest tag
         todo!()
     }
 
-    fn get_changelog(&self, tag: Option<Tag>, app_name: &str) -> Result<Vec<Change>, GitClientError> {
+    fn get_changelog(&self, tag: Option<Release>, app_name: &str) -> Result<Vec<Change>, GitClientError> {
+        todo!()
+    }
+
+    fn list_latest_releases(&self) -> Result<Vec<Release>, GitClientError> {
         todo!()
     }
 }

@@ -1,4 +1,6 @@
 use std::fmt::{Display, Formatter};
+use crate::commands::error::CommandError;
+use crate::commands::shell::git::GitCliError;
 use crate::git::model::GitProvider;
 
 #[derive(Debug)]
@@ -8,6 +10,9 @@ pub enum GitClientError {
 
     /// Git provider API request error
     RequestError(reqwest::Error),
+
+    /// Git command error
+    GitCliError(GitCliError),
 }
 
 impl Display for GitClientError {
@@ -23,6 +28,13 @@ impl Display for GitClientError {
                 )
             },
             GitClientError::RequestError(err) => write!(f, "Request error: {}", err),
+            GitClientError::GitCliError(error) => write!(f, "Git command error: {}", error),
         }
+    }
+}
+
+impl From<GitCliError> for GitClientError {
+    fn from(err: GitCliError) -> Self {
+        GitClientError::GitCliError(err)
     }
 }

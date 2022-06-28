@@ -1,5 +1,5 @@
 use crate::git::model::GitProvider;
-use crate::Config;
+use crate::{Config, Git};
 use crate::git::client::error::GitClientError;
 use crate::git::GitClient;
 use crate::git::model::Repo;
@@ -9,7 +9,12 @@ pub mod error;
 mod local;
 
 /// Create a new GitClient
-pub fn new_client(config: &Config, repo: Repo) -> Result<Box<dyn GitClient>, GitClientError> {
+pub fn new_client(config: &Config) -> Result<Box<dyn GitClient>, GitClientError> {
+    let format = &config.format;
+    let git = Git::init(format.clone());
+
+    let repo = git.get_repo_info()?;
+
     match repo.provider {
         GitProvider::Github => github_client(config, repo),
         _ => local_client(config, repo)

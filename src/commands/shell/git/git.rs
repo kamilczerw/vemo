@@ -2,13 +2,13 @@ use std::collections::HashMap;
 use log::debug;
 use regex::{Captures, Regex};
 use semver::Version;
-use crate::commands::error::CommandError;
+use crate::commands::shell::git::GitCliError;
 use crate::git::model::GitProvider;
 use crate::commands::shell::git_cli::ShellGit;
 use crate::commands::shell::GitCli;
 use crate::git::model::Change;
 use crate::git::model::{Repo, RepoType};
-use crate::git::model::Tag;
+use crate::git::model::Release;
 
 pub struct Git {
     git: Box<dyn GitCli>,
@@ -25,7 +25,7 @@ impl Git {
     }
 
     /// List git tags ordered by version descending
-    pub fn get_tags(&self, app_name_filter: Option<String>) -> Result<Vec<Tag>, CommandError> {
+    pub fn get_tags(&self, app_name_filter: Option<String>) -> Result<Vec<Release>, GitCliError> {
         let format = self.tag_format.clone();
         let filter = format
             .replace("{version}", "*");
@@ -44,9 +44,9 @@ impl Git {
     }
 
     /// List latest versions for each application
-    pub fn get_latest_tags(&self) -> Result<Vec<Tag>, CommandError> {
-        let mut tags: HashMap<String, Tag> = HashMap::new();
-        let mut result: Vec<Tag> = vec![];
+    pub fn get_latest_tags(&self) -> Result<Vec<Release>, GitCliError> {
+        let mut tags: HashMap<String, Release> = HashMap::new();
+        let mut result: Vec<Release> = vec![];
         for tag_ref in self.get_tags(None)?.iter() {
             let tag = tag_ref.clone();
             match tags.get(tag.app_name.as_str()) {
@@ -61,7 +61,7 @@ impl Git {
         Ok(result)
     }
 
-    pub fn find_latest_tag(&self, app_name: &str) -> Result<Option<Tag>, CommandError> {
+    pub fn find_latest_tag(&self, app_name: &str) -> Result<Option<Release>, GitCliError> {
         let tags = self.get_tags(Some(app_name.to_string()))?;
         debug!("Found {} tags for app {}, tags: {:?}", &tags.len(), app_name, &tags);
         let tag = tags.first();
@@ -69,11 +69,11 @@ impl Git {
         Ok(tag.map(|t| t.clone()))
     }
 
-    pub fn get_config(&self, key: &str) -> Result<String, CommandError> {
+    pub fn get_config(&self, key: &str) -> Result<String, GitCliError> {
         self.git.get_config(key)
     }
 
-    pub fn get_repo_info(&self) -> Result<Repo, CommandError> {
+    pub fn get_repo_info(&self) -> Result<Repo, GitCliError> {
         let repo_url = self.get_config("remote.origin.url")?;
         let repo_url = repo_url.as_str();
         let repo_url = repo_url.strip_suffix("\n").unwrap_or(repo_url);
@@ -86,7 +86,7 @@ impl Git {
         } else if http_re.is_match(repo_url) {
             (RepoType::Http, http_re.captures(repo_url).unwrap())
         } else {
-            return Err(CommandError::ParseError(format!("Invalid repo url {}", repo_url).to_string()))
+            return Err(GitCliError::ParseError(format!("Invalid repo url {}", repo_url).to_string()))
         };
 
         let provider = match caps.name("provider") {
@@ -103,7 +103,7 @@ impl Git {
 
         let repo_name = match caps.name("repo") {
             Some(repo) => repo.as_str().to_string(),
-            None => return Err(CommandError::ParseError("Failed to parse repo name".to_string()))
+            None => return Err(GitCliError::ParseError("Failed to parse repo name".to_string()))
         };
 
         Ok(Repo {
@@ -114,12 +114,12 @@ impl Git {
         })
     }
 
-    pub fn get_commits(&self, tag: Option<Tag>, dir: &str) -> Result<Vec<Change>, CommandError> {
+    pub fn get_commits(&self, tag: Option<Release>, dir: &str) -> Result<Vec<Change>, GitCliError> {
         let tag = tag.map(|t| t.formatted());
         self.git.get_commits(tag, dir)
     }
 
-    fn parse_tags(raw_tags: String, format: String) -> Vec<Tag> {
+    fn parse_tags(raw_tags: String, format: String) -> Vec<Release> {
         let regex = format
             .replace("{version}", "(?P<version>[0-9]+\\.[0-9]+\\.[0-9]+)")
             .replace("{app_name}", "(?P<app_name>[0-9a-zA-Z-_]+)");
@@ -136,7 +136,7 @@ impl Git {
 
             match (raw, app_name, version) {
                 (Some(raw), Some(app_name), Some(version)) => {
-                    tags.push(Tag::new(format.clone().as_str(), &raw, version, &app_name));
+                    tags.push(Release::new(format.clone().as_str(), &raw, version, &app_name));
                 },
                 _ => {}
             }

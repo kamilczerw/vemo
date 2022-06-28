@@ -11,7 +11,8 @@ use log4rs::append::console::ConsoleAppender;
 use log4rs::config::{Appender, Root};
 use cfg::Config;
 use error::AppError;
-use log::{debug, LevelFilter};
+use log::{debug, LevelFilter, SetLoggerError};
+use log4rs::Handle;
 
 use commands::Commands;
 use crate::commands::shell::git::Git;
@@ -32,6 +33,24 @@ fn app() -> Result<(), AppError> {
     let cli = Cli::parse();
     let config = Config::init()?;
 
+    let _handle = log_config(&config).unwrap();
+
+    debug!("Configuration: {:#?}", config);
+
+    // TODO: if the git client is not supported, the program should not fail
+    //       There should still be possibility to create a tag without a git provider
+    let git_client = git::client::new_client(&config)?;
+
+    let result: () = match &cli.command {
+        Commands::List {} => commands::list::run(git_client)?,
+        Commands::Bump { name, component } =>
+            commands::bump::run(config, name, component, git_client)?
+    };
+
+    Ok(result)
+}
+
+fn log_config(config: &Config) -> Result<Handle, SetLoggerError> {
     let stdout = ConsoleAppender::builder().build();
     let log_config = log4rs::config::Config::builder()
         .appender(Appender::builder().build("stdout", Box::new(stdout)));
@@ -42,26 +61,7 @@ fn app() -> Result<(), AppError> {
         log_config.build(Root::builder().appender("stdout").build(LevelFilter::Error))
     }.unwrap();
 
-    let _handle = log4rs::init_config(log_config).unwrap();
-
-    debug!("Configuration: {:#?}", config);
-
-    let format = &config.format;
-    let git = Git::init(format.clone());
-
-    let repo_info = git.get_repo_info()?;
-
-    // TODO: if the git client is not supported, the program should not fail
-    //       There should still be possibility to create a tag without a git provider
-    let git_client = git::client::new_client(&config, repo_info)?;
-
-    let result: () = match &cli.command {
-        Commands::List {} => commands::list::run(config)?,
-        Commands::Bump { name, component } =>
-            commands::bump::run(config, name, component, git_client)?
-    };
-
-    Ok(result)
+    log4rs::init_config(log_config)
 }
 
 fn main() {

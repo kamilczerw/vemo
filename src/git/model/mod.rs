@@ -5,7 +5,7 @@ mod repo;
 mod git_provider;
 
 pub use change::Change;
-pub use tag::Tag;
+pub use tag::Release;
 pub use repo::{Repo, RepoType};
 pub use git_provider::GitProvider;
 
