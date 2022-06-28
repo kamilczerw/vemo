@@ -24,14 +24,15 @@ pub fn run(config: Config, name: &String, component: &Component, git_client: Box
         Some(tag) => (Some(tag.clone()), tag.bump(component))
     };
 
-    let commits = config.app_path(name.as_str()).map(|path| {
-        // git.get_commits(latest_tag, path.as_str())
-        git_client.get_changelog(latest_tag, path.as_str())
-    }).unwrap_or(Ok(vec![]));
+    let commits = git_client.get_changelog(latest_tag, name.as_str())?;
+    // let commits = config.app_path(name.as_str()).map(|path| {
+    //     // git.get_commits(latest_tag, path.as_str())
+    //     git_client.get_changelog(latest_tag, path.as_str())
+    // }).unwrap_or(Ok(vec![]));
 
     let mut body = String::from("## What's Changed\n\n");
 
-    for commit in commits? {
+    for commit in commits {
         body.push_str(&format!("* {} by {}\n", commit.message, commit.author.email));
     }
 

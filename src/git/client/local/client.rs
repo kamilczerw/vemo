@@ -2,26 +2,29 @@
 use crate::git::model::{Change, Release};
 use crate::commands::shell::GitCli;
 use crate::commands::shell::git_cli::ShellGit;
+use crate::Git;
 use crate::git::client::error::GitClientError;
 use crate::git::GitClient;
 
+/// Local Git client
+/// This client is used to interact with the repository using local git commands.
 pub struct LocalClient {
-    git: Box<dyn GitCli>,
+    git: Git,
     tag_format: String // TODO: is this needed?
 }
 
 impl LocalClient {
     pub fn init(tag_format: String) -> LocalClient {
-        Self::new(Box::new(ShellGit {}), tag_format)
-    }
-
-    pub fn new(git: Box<dyn GitCli>, tag_format: String) -> LocalClient {
-        LocalClient { git, tag_format }
+        LocalClient {
+            git: Git::init(tag_format.clone()),
+            tag_format
+        }
     }
 }
 
 impl GitClient for LocalClient {
     fn create_release(&self, name: String, tag: Release, body: String) -> Result<(), GitClientError> {
+        // Create a new tag with Git and push it to the remote
         todo!()
     }
 

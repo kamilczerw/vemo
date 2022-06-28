@@ -1,16 +1,21 @@
+use std::collections::HashMap;
 use reqwest::blocking::Client;
 use crate::commands::error::CommandError;
 use crate::git::client::error::GitClientError;
 use crate::git::GitClient;
 use crate::git::model::{Change, Repo};
 use serde_json::json;
+use crate::cfg::AppConfig;
+use crate::Git;
 use crate::git::model::Release;
 
 pub struct GithubClient {
     pub token: String,
     pub http: Client,
     pub api: String,
-    pub repo: String
+    pub repo: String,
+    git: Git,
+    app_configs: HashMap<String, AppConfig>,
 }
 
 impl GithubClient {
@@ -18,12 +23,14 @@ impl GithubClient {
     /// # Arguments
     /// * `token` - Github token
     /// * `repo` - Repo object
-    pub fn new(token: String, repo: Repo) -> Result<GithubClient, GitClientError> {
+    pub fn new(token: String, repo: Repo, git_cli: Git, app_configs: HashMap<String, AppConfig>) -> Result<GithubClient, GitClientError> {
         Ok(GithubClient {
             token,
             http: Client::new(),
             api: "https://api.github.com".to_string(),
-            repo: repo.repo_name
+            repo: repo.repo_name,
+            git: git_cli,
+            app_configs
         })
     }
 }
@@ -49,12 +56,18 @@ impl GitClient for GithubClient {
     }
 
     fn latest_release(&self, name: &str) -> Result<Option<Release>, GitClientError> {
-        // TODO: use GitCli to get the latest tag
-        todo!()
+        self.git.find_latest_tag(name)
+            .map_err(|e| GitClientError::GitCliError(e))
     }
 
     fn get_changelog(&self, tag: Option<Release>, app_name: &str) -> Result<Vec<Change>, GitClientError> {
-        todo!()
+        let dir = self.app_configs.get(app_name)
+            .map(|c| c.path.clone())
+            .flatten()
+            .ok_or(GitClientError::MissingAppConfig(app_name.to_string()))?;
+        
+        self.git.get_commits(tag, &dir)
+            .map_err(|e| GitClientError::GitCliError(e))
     }
 
     fn list_latest_releases(&self) -> Result<Vec<Release>, GitClientError> {

@@ -13,6 +13,9 @@ pub enum GitClientError {
 
     /// Git command error
     GitCliError(GitCliError),
+
+    /// Missing app config
+    MissingAppConfig(String),
 }
 
 impl Display for GitClientError {
@@ -29,6 +32,7 @@ impl Display for GitClientError {
             },
             GitClientError::RequestError(err) => write!(f, "Request error: {}", err),
             GitClientError::GitCliError(error) => write!(f, "Git command error: {}", error),
+            GitClientError::MissingAppConfig(app_name) => write!(f, "Missing app config for {}", app_name),
         }
     }
 }

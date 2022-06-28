@@ -16,15 +16,17 @@ pub fn new_client(config: &Config) -> Result<Box<dyn GitClient>, GitClientError>
     let repo = git.get_repo_info()?;
 
     match repo.provider {
-        GitProvider::Github => github_client(config, repo),
+        GitProvider::Github => github_client(config, repo, git),
         _ => local_client(config, repo)
     }
 }
 
 /// Create a new GithubClient
-fn github_client(config: &Config, repo: Repo) -> Result<Box<dyn GitClient>, GitClientError> {
+fn github_client(config: &Config, repo: Repo, git: Git) -> Result<Box<dyn GitClient>, GitClientError> {
+    let config = config.clone();
     config.gh_token.clone().map(|token| {
-        github::GithubClient::new(token, repo).map(|client| Box::new(client) as Box<dyn GitClient>)
+        github::GithubClient::new(token, repo, git, config.apps)
+            .map(|client| Box::new(client) as Box<dyn GitClient>)
     }).ok_or(GitClientError::MissingToken(GitProvider::Github))?
 }
 
