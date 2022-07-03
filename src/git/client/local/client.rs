@@ -9,14 +9,14 @@ use crate::git::GitClient;
 /// Local Git client
 /// This client is used to interact with the repository using local git commands.
 pub struct LocalClient {
-    git: Git,
+    _git: Git,
     tag_format: String // TODO: is this needed?
 }
 
 impl LocalClient {
     pub fn init(tag_format: String) -> LocalClient {
         LocalClient {
-            git: Git::init(tag_format.clone()),
+            _git: Git::init(tag_format.clone()),
             tag_format
         }
     }

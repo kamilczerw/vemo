@@ -9,6 +9,7 @@ use crate::commands::shell::GitCli;
 use crate::git::model::Change;
 use crate::git::model::{Repo, RepoType};
 use crate::git::model::Release;
+use mockall::*;
 
 pub struct Git {
     git: Box<dyn GitCli>,

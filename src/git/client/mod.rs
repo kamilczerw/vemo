@@ -8,6 +8,9 @@ mod github;
 pub mod error;
 mod local;
 
+#[cfg(test)]
+mod github_test;
+
 /// Create a new GitClient
 pub fn new_client(config: &Config) -> Result<Box<dyn GitClient>, GitClientError> {
     let format = &config.format;
@@ -31,6 +34,6 @@ fn github_client(config: &Config, repo: Repo, git: Git) -> Result<Box<dyn GitCli
 }
 
 /// Create a local GitClient
-fn local_client(config: &Config, repo: Repo) -> Result<Box<dyn GitClient>, GitClientError> {
+fn local_client(config: &Config, _repo: Repo) -> Result<Box<dyn GitClient>, GitClientError> {
     Ok(Box::new(local::LocalClient::init(config.format.clone())))
 }

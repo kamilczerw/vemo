@@ -11,7 +11,7 @@ use crate::git::model::Release;
 
 pub fn run(config: Config, name: &String, component: &Component, git_client: Box<dyn GitClient>) -> Result<(), CommandError>  {
     let format = config.format.clone();
-    let git = Git::init(format.clone());
+    // let git = Git::init(format.clone());
 
     let default_version = Version::parse("0.1.0").unwrap();
 
