@@ -2,7 +2,7 @@ use std::fmt::{Display, Formatter};
 use semver::Version;
 use crate::commands::Component;
 
-#[derive(Debug, Clone, Eq, Ord, PartialEq, PartialOrd)]
+#[derive(Debug, Clone, Eq, Ord, PartialEq)]
 pub struct Tag {
     pub format: String,
     pub raw: String,
@@ -48,5 +48,11 @@ impl Tag {
 impl Display for Tag {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", self.formatted())
+    }
+}
+
+impl PartialOrd for Tag {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.version.cmp(&other.version))
     }
 }
