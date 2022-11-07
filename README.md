@@ -2,6 +2,20 @@
 
 Vemo stands for **Ve**rsioning of **mo**norepo. It is a simple cli tool written in Rust 🦀 for bumping services/applications inside your monorepo.
 
+## Installation
+
+To install `vemo` you need [`cargo`](https://doc.rust-lang.org/cargo/).
+
+Once you have cargo installed, run the following command:
+
+```sh
+cargo install --git https://github.com/kamilczerw/vemo
+```
+
+> **Info**
+>
+> Once `vemo` is more stable, I will release binaries, then the installation should be easier.
+
 ## 🧩 Usage
 
 > **Warning**
