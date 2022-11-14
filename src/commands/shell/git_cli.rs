@@ -27,7 +27,7 @@ impl GitCli for ShellGit {
         let format = "--pretty=format:%H;%aN;%aE;%s;%cI";
         let tags = match tag {
             None => String::from(""),
-            Some(t) => format!("{}..HEAD", t)
+            Some(t) => format!("{}..origin/main", t)
         };
         let git_command = vec![
             "log",

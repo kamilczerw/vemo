@@ -1,0 +1,7 @@
+format = "{app_name}/v{version}"
+
+[app.a]
+path = "app_a"
+
+[app.b]
+path = "app_b"

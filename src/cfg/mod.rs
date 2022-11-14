@@ -3,6 +3,9 @@ use std::env;
 use std::path::Path;
 use config::{Config as Cfg, ConfigError, Source, ValueKind};
 
+#[cfg(test)]
+mod config_test;
+
 #[derive(Debug, Clone)]
 pub struct AppConfig {
     pub path: Option<String>
@@ -70,19 +73,16 @@ impl Config {
     fn get_app_configs(settings: Cfg) -> Result<HashMap<String, AppConfig>, ConfigError> {
         let mut app_configs: HashMap<String, AppConfig> = HashMap::new();
 
-        for (key, value) in settings.collect().unwrap() {
-            // If the key is github, then it should not be considered as an app config.
-            if key == "github" {
-                continue;
-            }
-            match value.kind {
+        // TODO: handle error instead of using .unwrap()
+        for (app_name, value) in settings.get_table("app").unwrap().iter() {
+            match &value.kind {
                 ValueKind::Table(t) => {
                     let path = t.get("path").map(|v| {
                         v.clone().into_string().map(Some)
                     }).unwrap_or(Ok(None));
 
                     let app_config = AppConfig { path: path? };
-                    app_configs.insert(key, app_config);
+                    app_configs.insert(app_name.clone(), app_config);
                 }
                 _ => { }
             };

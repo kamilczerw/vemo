@@ -43,7 +43,7 @@ debug = false
 
 # Example application config
 # This section is optional, used for application specific configuration
-[http-gateway]
+[app.http-gateway]
 # Used to generate changelog based on commits in a specific directory
 # This setting is optional
 # TODO: Not implemented yet
