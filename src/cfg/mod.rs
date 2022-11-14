@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use std::env;
 use std::path::Path;
-use config::{Config as Cfg, ConfigError, Source, ValueKind};
+use config::{Config as Cfg, ConfigError, ValueKind};
 
 #[cfg(test)]
 mod config_test;

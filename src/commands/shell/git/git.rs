@@ -104,7 +104,7 @@ impl Git {
         };
 
         Ok(Repo {
-            git_url: repo_url.to_string(),
+            raw_url: repo_url.to_string(),
             provider,
             repo_name,
             repo_type

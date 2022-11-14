@@ -32,7 +32,7 @@ pub fn run(config: Config, name: &String, component: &Component, git_client: Box
         body.push_str(&format!("* {} by {}\n", commit.message, commit.author.email));
     }
 
-    let repo_url = git.get_repo_info()?.git_url;
+    let repo_url = git.get_repo_info()?.http_url();
 
     if latest_tag.is_some() {
         body.push_str(&format!("\n\n**Full Changelog**: {}/compare/{}...{}", repo_url, &latest_tag.unwrap(), new_tag));

@@ -13,3 +13,4 @@ pub use git::Git;
 
 #[cfg(test)]
 mod commit_test;
+mod git_test;
