@@ -1,7 +1,8 @@
-use crate::commands::shell::git::{GitProvider, Repo};
+use crate::git::git_provider::GitProvider;
 use crate::Config;
 use crate::git::client::error::GitClientError;
 use crate::git::GitClient;
+use crate::git::model::repo::Repo;
 
 mod github;
 pub mod error;

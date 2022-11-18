@@ -1,7 +1,6 @@
 pub mod bump;
 pub mod list;
 pub mod error;
-pub mod shell;
 
 #[cfg(test)]
 mod bump_test;

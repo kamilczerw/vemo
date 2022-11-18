@@ -1,5 +1,6 @@
-use chrono::ParseError;
 use crate::commands::error::CommandError;
+use crate::git::model::author::Author;
+use chrono::ParseError;
 
 #[derive(Debug, Clone, Eq, Ord, PartialEq, PartialOrd)]
 pub struct Commit {
@@ -7,12 +8,6 @@ pub struct Commit {
     pub message: String,
     pub author: Author,
     pub date: chrono::DateTime<chrono::Utc>
-}
-
-#[derive(Debug, Clone, Eq, Ord, PartialEq, PartialOrd)]
-pub struct Author {
-    pub name: String,
-    pub email: String
 }
 
 impl Commit {

@@ -1,13 +1,10 @@
-mod git_cli;
-pub(crate) mod git;
-
-#[cfg(test)]
-mod git_test;
-
-use mockall::*;
-use mockall::predicate::*;
+use mockall::automock;
+use mockall::predicate::str;
 use crate::commands::error::CommandError;
-use crate::commands::shell::git::Commit;
+use crate::git::model::commit::Commit;
+
+pub(crate) mod git_cli;
+mod git_test;
 
 #[automock]
 pub trait GitCli {

@@ -1,5 +1,5 @@
-use std::fmt::{Display, Formatter};
 use semver::Version;
+use std::fmt::{Display, Formatter};
 use crate::commands::Component;
 
 #[derive(Debug, Clone, Eq, Ord, PartialEq)]

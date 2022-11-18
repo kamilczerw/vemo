@@ -1,8 +1,64 @@
-use mockall::predicate::*;
+use mockall::predicate::{eq, str};
 use semver::Version;
+use crate::git::Git;
+use crate::git::git_provider::GitProvider;
+use crate::git::model::repo::RepoType;
+use crate::git::model::tag::Tag;
+use crate::git::shell::MockGitCli;
 
-use crate::commands::shell::git::{Git, GitProvider, RepoType, Tag};
-use crate::commands::shell::MockGitCli;
+#[test]
+fn get_repo_info_should_return_repo_info_for_ssh_repo() {
+    let mut git_cli_mock = MockGitCli::new();
+
+    git_cli_mock.expect_get_config()
+        .with(eq("remote.origin.url"))
+        .returning(|_| Ok(String::from("git@github.com:abc/def.git")));
+
+    let git = Git::new(Box::new(git_cli_mock), String::from(""));
+
+    let info = git.get_repo_info().ok().unwrap();
+    assert_eq!(GitProvider::Github, info.provider);
+    assert_eq!(RepoType::Ssh, info.repo_type);
+    assert_eq!("git@github.com:abc/def.git", info.raw_url);
+    assert_eq!("https://github.com/abc/def", info.http_url());
+    assert_eq!("abc/def", info.repo_name);
+}
+
+#[test]
+fn get_repo_info_should_return_repo_info_for_http_repo() {
+    let mut git_cli_mock = MockGitCli::new();
+
+    git_cli_mock.expect_get_config()
+    .with(eq("remote.origin.url"))
+    .returning(|_| Ok(String::from("https://github.com/abc/def.git")));
+
+    let git = Git::new(Box::new(git_cli_mock), String::from(""));
+
+    let info = git.get_repo_info().ok().unwrap();
+    assert_eq!(GitProvider::Github, info.provider);
+    assert_eq!(RepoType::Http, info.repo_type);
+    assert_eq!("https://github.com/abc/def.git", info.raw_url);
+    assert_eq!("https://github.com/abc/def", info.http_url());
+    assert_eq!("abc/def", info.repo_name);
+}
+
+#[test]
+fn get_repo_info_should_return_repo_info_for_http_repo_without_https() {
+    let mut git_cli_mock = MockGitCli::new();
+
+    git_cli_mock.expect_get_config()
+        .with(eq("remote.origin.url"))
+        .returning(|_| Ok(String::from("github.com/abc/def.git")));
+
+    let git = Git::new(Box::new(git_cli_mock), String::from(""));
+
+    let info = git.get_repo_info().ok().unwrap();
+    assert_eq!(GitProvider::Github, info.provider);
+    assert_eq!(RepoType::Http, info.repo_type);
+    assert_eq!("github.com/abc/def.git", info.raw_url);
+    assert_eq!("https://github.com/abc/def", info.http_url());
+    assert_eq!("abc/def", info.repo_name);
+}
 
 static TAG_FORMAT: &str = "{app_name}/v{version}";
 

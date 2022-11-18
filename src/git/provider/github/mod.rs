@@ -1,4 +1,4 @@
-use crate::commands::shell::git::Tag;
+use crate::git::model::tag::Tag;
 use crate::git::GitProvider;
 use crate::git::provider::error::GitProviderError;
 

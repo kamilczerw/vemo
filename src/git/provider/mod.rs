@@ -1,7 +1,6 @@
-use crate::commands::shell::git::{Git, git_provider, Repo, Tag};
-use crate::Config;
-use crate::git::client::error::GitClientError;
-use crate::git::GitClient;
+use crate::git::git_provider;
+use crate::git::model::repo::Repo;
+use crate::git::model::tag::Tag;
 use crate::git::provider::error::GitProviderError;
 
 pub mod error;

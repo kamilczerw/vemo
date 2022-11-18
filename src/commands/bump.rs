@@ -3,11 +3,11 @@ use semver::Version;
 use crate::cfg::Config;
 use crate::commands::Component;
 use crate::commands::error::CommandError;
-use crate::commands::shell::git::{Git, GitProvider, Tag};
 use colored::Colorize;
 use log::debug;
 use crate::git;
-use crate::git::GitClient;
+use crate::git::{Git, GitClient};
+use crate::git::model::tag::Tag;
 
 pub fn run(config: Config, name: &String, component: &Component, git_client: Box<dyn GitClient>) -> Result<(), CommandError>  {
     let format = config.format.clone();
@@ -55,7 +55,7 @@ pub fn run_v2(config: Config, app_name: &str, component: &Component) -> Result<(
 
     let default_version = Version::parse("0.1.0").unwrap();
 
-    let (latest_tag, new_tag) = match git.find_latest_tag(app_name)? {
+    let (_latest_tag, new_tag) = match git.find_latest_tag(app_name)? {
         None => {
             debug!("Version of {} not found, new tag with default version ({}) version will be created", app_name, default_version);
             (None, Tag::new_with_format(&config.format, app_name, default_version))

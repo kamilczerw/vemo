@@ -1,5 +1,5 @@
 use crate::commands::error::CommandError;
-use crate::commands::shell::git::Git;
+use crate::git::Git;
 use crate::Config;
 
 use colored::Colorize;

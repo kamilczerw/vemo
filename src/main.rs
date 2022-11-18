@@ -14,7 +14,7 @@ use error::AppError;
 use log::{debug, LevelFilter};
 
 use commands::Commands;
-use crate::commands::shell::git::Git;
+use git::Git;
 
 /// Manage your monorepo versions with ease.
 ///

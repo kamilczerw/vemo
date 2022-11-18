@@ -1,4 +1,4 @@
-use crate::commands::shell::git::Commit;
+use crate::git::model::commit::Commit;
 
 #[test]
 fn parse_git_line_should_return_commit_object() {

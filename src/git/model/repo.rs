@@ -1,4 +1,4 @@
-use crate::commands::shell::git::GitProvider;
+use crate::git::git_provider::GitProvider;
 
 #[derive(Debug, Clone, Eq, Ord, PartialEq, PartialOrd)]
 pub struct Repo {

@@ -2,8 +2,9 @@ use reqwest::blocking::Client;
 use crate::commands::error::CommandError;
 use crate::git::client::error::GitClientError;
 use crate::git::GitClient;
-use crate::commands::shell::git::{Repo, Tag};
+use crate::git::model::tag::Tag;
 use serde_json::json;
+use crate::git::model::repo::Repo;
 
 pub struct GithubClient {
     pub token: String,

@@ -1,5 +1,4 @@
 use std::fmt::{Display, Formatter};
-use crate::commands::shell::git::GitProvider;
 
 #[derive(Debug)]
 pub enum GitProviderError {
