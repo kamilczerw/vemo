@@ -27,5 +27,4 @@ fn get_apps_config_should_parse_nested_keys() {
 
     let app_a = values.next().unwrap();
     assert_eq!(app_a.path, Some(String::from("app_a")));
-
 }

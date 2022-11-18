@@ -6,6 +6,8 @@ use config::{Config as Cfg, ConfigError, ValueKind};
 #[cfg(test)]
 mod config_test;
 
+pub static DEFAULT_TAG_FORMAT: &str = "{app_name}/v{version}";
+
 #[derive(Debug, Clone)]
 pub struct AppConfig {
     pub path: Option<String>
@@ -15,6 +17,8 @@ pub struct AppConfig {
 pub struct Config {
     pub format: String,
     pub debug: bool,
+
+    #[deprecated(since="1.0.0", note="please use `providers` instead")]
     pub gh_token: Option<String>,
     pub apps: HashMap<String, AppConfig>
 }
@@ -24,7 +28,7 @@ impl Config {
        let settings = Config::read_config()?;
 
         let format = settings.get_string("format")
-            .unwrap_or(String::from("{app_name}/v{version}"));
+            .unwrap_or(String::from(DEFAULT_TAG_FORMAT));
 
         let debug = settings.get_bool("debug").unwrap_or(false);
         let gh_token = match settings.get_string("github.token") {

@@ -1,7 +1,7 @@
 mod tag;
 mod commit;
 mod repo;
-mod git_provider;
+pub(crate) mod git_provider;
 mod git;
 
 pub use tag::Tag;

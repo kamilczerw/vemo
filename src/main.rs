@@ -58,7 +58,9 @@ fn app() -> Result<(), AppError> {
     let result: () = match &cli.command {
         Commands::List {} => commands::list::run(config)?,
         Commands::Bump { name, component } =>
-            commands::bump::run(config, name, component, git_client)?
+            commands::bump::run(config, name, component, git_client)?,
+        Commands::BumpV2 { name, component } =>
+            commands::bump::run_v2(config, name, component)?
     };
 
     Ok(result)

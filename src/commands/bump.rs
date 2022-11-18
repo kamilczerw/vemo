@@ -3,9 +3,10 @@ use semver::Version;
 use crate::cfg::Config;
 use crate::commands::Component;
 use crate::commands::error::CommandError;
-use crate::commands::shell::git::{Git, Tag};
+use crate::commands::shell::git::{Git, GitProvider, Tag};
 use colored::Colorize;
 use log::debug;
+use crate::git;
 use crate::git::GitClient;
 
 pub fn run(config: Config, name: &String, component: &Component, git_client: Box<dyn GitClient>) -> Result<(), CommandError>  {
@@ -45,6 +46,27 @@ pub fn run(config: Config, name: &String, component: &Component, git_client: Box
     let release_name = format!("{} - v{}", &name, &new_tag.version);
 
     release(git_client, release_name, new_tag, body)
+}
+
+pub fn run_v2(config: Config, app_name: &str, component: &Component) -> Result<(), CommandError> {
+    let git_cli = Git::init(config.format.clone());
+    let repo = git_cli.get_repo_info()?;
+    let git = git::provider::new(&repo)?;
+
+    let default_version = Version::parse("0.1.0").unwrap();
+
+    let (latest_tag, new_tag) = match git.find_latest_tag(app_name)? {
+        None => {
+            debug!("Version of {} not found, new tag with default version ({}) version will be created", app_name, default_version);
+            (None, Tag::new_with_format(&config.format, app_name, default_version))
+        }
+        Some(tag) => (Some(tag.clone()), tag.bump(component))
+    };
+
+    let body = String::from("This is\na multi line\n string ");
+
+    git.release(app_name, new_tag, body)
+        .map_err(|error| CommandError::UnexpectedError(error.to_string()))
 }
 
 fn release(git_client: Box<dyn GitClient>, name: String, new_tag: Tag, body: String) -> Result<(), CommandError> {

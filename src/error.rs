@@ -26,6 +26,7 @@ impl From<CommandError> for AppError {
             CommandError::ParseError(message) => { AppError { message, code: 1 } }
             CommandError::ShellError(message) => { AppError { message, code: 1 } }
             CommandError::GitClientError(e) => { AppError { message: format!("{}", e), code: 1 } }
+            CommandError::UnexpectedError(message) => { AppError { message, code: 1 } }
         }
         // TODO: implement better mapping for command errors
         // AppError { message: format!(""), code: 1 }
