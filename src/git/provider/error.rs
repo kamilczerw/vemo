@@ -1,11 +1,12 @@
 use std::fmt::{Display, Formatter};
+use crate::git;
 
 #[derive(Debug)]
 pub enum GitProviderError {
     /// Failed to initialize git provider
     InitError(String),
 
-    ProviderNotSupported(String)
+    ProviderNotSupported(git::Provider)
 }
 
 impl Display for GitProviderError {

@@ -1,10 +1,10 @@
-use crate::git::git_provider::GitProvider;
+use crate::git;
 
 #[derive(Debug, Clone, Eq, Ord, PartialEq, PartialOrd)]
 pub struct Repo {
     pub raw_url: String,
     pub repo_name: String,
-    pub provider: GitProvider,
+    pub provider: git::Provider,
     pub repo_type: RepoType
 }
 

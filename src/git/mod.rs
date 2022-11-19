@@ -17,6 +17,8 @@ use shell::git_cli::ShellGit;
 use model::commit::Commit;
 use model::repo::{Repo, RepoType};
 use shell::GitCli;
+use provider::Provider;
+use crate::git;
 
 pub trait GitClient {
     fn create_release(&self, name: String, tag: Tag, body: String) -> Result<(), GitClientError>;
@@ -85,6 +87,8 @@ impl Git {
         self.git.get_config(key)
     }
 
+
+    #[deprecated(since = "0.1.1", note = "Please use repo instead")]
     pub fn get_repo_info(&self) -> Result<Repo, CommandError> {
         let repo_url = self.get_config("remote.origin.url")?;
         let repo_url = repo_url.as_str();
@@ -104,13 +108,11 @@ impl Git {
         let provider = match caps.name("provider") {
             Some(provider) => {
                 match provider.as_str() {
-                    "github.com" => git_provider::GitProvider::Github,
-                    "gitlab.com" => git_provider::GitProvider::Gitlab,
-                    "bitbucket.com" => git_provider::GitProvider::Bitbucket,
-                    _ => git_provider::GitProvider::Unknown
+                    "github.com" => Provider::Github,
+                    _ => Provider::Unknown
                 }
             }
-            None => git_provider::GitProvider::Unknown
+            None => Provider::Unknown
         };
 
         let repo_name = match caps.name("repo") {

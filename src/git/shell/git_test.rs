@@ -1,5 +1,6 @@
 use mockall::predicate::{eq, str};
 use semver::Version;
+use crate::git;
 use crate::git::Git;
 use crate::git::git_provider::GitProvider;
 use crate::git::model::repo::RepoType;
@@ -17,7 +18,7 @@ fn get_repo_info_should_return_repo_info_for_ssh_repo() {
     let git = Git::new(Box::new(git_cli_mock), String::from(""));
 
     let info = git.get_repo_info().ok().unwrap();
-    assert_eq!(GitProvider::Github, info.provider);
+    assert_eq!(git::Provider::Github, info.provider);
     assert_eq!(RepoType::Ssh, info.repo_type);
     assert_eq!("git@github.com:abc/def.git", info.raw_url);
     assert_eq!("https://github.com/abc/def", info.http_url());
@@ -35,7 +36,7 @@ fn get_repo_info_should_return_repo_info_for_http_repo() {
     let git = Git::new(Box::new(git_cli_mock), String::from(""));
 
     let info = git.get_repo_info().ok().unwrap();
-    assert_eq!(GitProvider::Github, info.provider);
+    assert_eq!(git::Provider::Github, info.provider);
     assert_eq!(RepoType::Http, info.repo_type);
     assert_eq!("https://github.com/abc/def.git", info.raw_url);
     assert_eq!("https://github.com/abc/def", info.http_url());
@@ -53,7 +54,7 @@ fn get_repo_info_should_return_repo_info_for_http_repo_without_https() {
     let git = Git::new(Box::new(git_cli_mock), String::from(""));
 
     let info = git.get_repo_info().ok().unwrap();
-    assert_eq!(GitProvider::Github, info.provider);
+    assert_eq!(git::Provider::Github, info.provider);
     assert_eq!(RepoType::Http, info.repo_type);
     assert_eq!("github.com/abc/def.git", info.raw_url);
     assert_eq!("https://github.com/abc/def", info.http_url());
@@ -118,7 +119,7 @@ fn get_repo_info_with_valid_github_ssh_url_should_return_a_repo_info() {
     assert_eq!(repo_info.repo_name, "kamilczerw/vemo");
     assert_eq!(repo_info.raw_url, "git@github.com:kamilczerw/vemo.git".to_string());
     assert_eq!(repo_info.repo_type, RepoType::Ssh);
-    assert_eq!(repo_info.provider, GitProvider::Github);
+    assert_eq!(repo_info.provider, git::Provider::Github);
 }
 
 #[test]
@@ -134,7 +135,7 @@ fn get_repo_info_with_valid_github_ssh_url_with_new_line_at_the_end_should_retur
     assert_eq!(repo_info.repo_name, "kamilczerw/vemo");
     assert_eq!(repo_info.raw_url, "git@github.com:kamilczerw/vemo.git".to_string());
     assert_eq!(repo_info.repo_type, RepoType::Ssh);
-    assert_eq!(repo_info.provider, GitProvider::Github);
+    assert_eq!(repo_info.provider, git::Provider::Github);
 }
 
 #[test]
@@ -150,7 +151,7 @@ fn get_repo_info_with_valid_github_http_url_should_return_a_repo_info() {
     assert_eq!(repo_info.repo_name, "kamilczerw/vemo");
     assert_eq!(repo_info.raw_url, "https://github.com/kamilczerw/vemo.git");
     assert_eq!(repo_info.repo_type, RepoType::Http);
-    assert_eq!(repo_info.provider, GitProvider::Github);
+    assert_eq!(repo_info.provider, git::Provider::Github);
 }
 
 #[test]
@@ -166,7 +167,7 @@ fn get_repo_info_with_valid_github_http_url_but_skipping_protocol_should_return_
     assert_eq!(repo_info.repo_name, "kamilczerw/vemo");
     assert_eq!(repo_info.raw_url, "github.com/kamilczerw/vemo.git");
     assert_eq!(repo_info.repo_type, RepoType::Http);
-    assert_eq!(repo_info.provider, GitProvider::Github);
+    assert_eq!(repo_info.provider, git::Provider::Github);
 }
 
 #[test]
@@ -206,5 +207,5 @@ fn get_repo_info_with_invalid_provider_should_return_a_repo_info_with_unknown_pr
     assert_eq!(repo_info.repo_name, "kamilczerw/vemo");
     assert_eq!(repo_info.raw_url, "git@invalid.com:kamilczerw/vemo.git".to_string());
     assert_eq!(repo_info.repo_type, RepoType::Ssh);
-    assert_eq!(repo_info.provider, GitProvider::Unknown);
+    assert_eq!(repo_info.provider, git::Provider::Unknown);
 }

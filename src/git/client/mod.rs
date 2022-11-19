@@ -1,5 +1,5 @@
 use crate::git::git_provider::GitProvider;
-use crate::Config;
+use crate::{Config, git};
 use crate::git::client::error::GitClientError;
 use crate::git::GitClient;
 use crate::git::model::repo::Repo;
@@ -10,7 +10,7 @@ pub mod error;
 /// Create a new GitClient
 pub fn new_client(config: &Config, repo: Repo) -> Result<Box<dyn GitClient>, GitClientError> {
     match repo.provider {
-        GitProvider::Github => github_client(config, repo),
+        git::Provider::Github => github_client(config, repo),
         _ => Err(GitClientError::UnsupportedProvider(repo.provider))
     }
 }

@@ -1,4 +1,5 @@
 use std::fmt::{Display, Formatter};
+use crate::git;
 use crate::git::git_provider::GitProvider;
 
 #[derive(Debug)]
@@ -7,7 +8,7 @@ pub enum GitClientError {
     MissingToken(GitProvider),
 
     /// Git provider is not supported
-    UnsupportedProvider(GitProvider),
+    UnsupportedProvider(git::Provider),
 
     /// Git provider API request error
     RequestError(reqwest::Error),

@@ -49,9 +49,7 @@ pub fn run(config: Config, name: &String, component: &Component, git_client: Box
 }
 
 pub fn run_v2(config: Config, app_name: &str, component: &Component) -> Result<(), CommandError> {
-    let git_cli = Git::init(config.format.clone());
-    let repo = git_cli.get_repo_info()?;
-    let git = git::provider::new(&repo)?;
+    let git = git::provider::new(&config)?;
 
     let default_version = Version::parse("0.1.0").unwrap();
 
