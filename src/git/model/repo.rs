@@ -1,6 +1,6 @@
 use crate::git;
 
-#[derive(Debug, Clone, Eq, Ord, PartialEq, PartialOrd)]
+#[derive(Debug, Clone, Eq, Ord, PartialEq, PartialOrd, Default)]
 pub struct Repo {
     pub raw_url: String,
     pub repo_name: String,
@@ -8,8 +8,9 @@ pub struct Repo {
     pub repo_type: RepoType
 }
 
-#[derive(Debug, Clone, Eq, Ord, PartialEq, PartialOrd)]
+#[derive(Debug, Clone, Eq, Ord, PartialEq, PartialOrd, Default)]
 pub enum RepoType {
+    #[default]
     Ssh,
     Http
 }

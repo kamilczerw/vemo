@@ -2,6 +2,7 @@ use std::str::Utf8Error;
 use std::string::FromUtf8Error;
 use crate::git::client::error::GitClientError;
 use crate::git::provider::error::GitProviderError;
+use crate::git::provider::cli::error::CliProviderError;
 
 #[derive(Debug)]
 pub enum CommandError {
@@ -32,6 +33,12 @@ impl From<FromUtf8Error> for CommandError {
 
 impl From<GitProviderError> for CommandError {
     fn from(err: GitProviderError) -> Self {
+        CommandError::ShellError(format!("{}", err))
+    }
+}
+
+impl From<CliProviderError> for CommandError {
+    fn from(err: CliProviderError) -> Self {
         CommandError::ShellError(format!("{}", err))
     }
 }

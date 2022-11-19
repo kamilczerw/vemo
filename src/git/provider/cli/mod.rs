@@ -1,23 +1,24 @@
 mod provider_test;
+pub(crate) mod error;
 
+use std::fmt::Display;
 use regex::Regex;
+use error::CliProviderError;
 use crate::git;
 use crate::git::model::repo::{Repo, RepoType};
 use crate::git::provider::error::GitProviderError;
 use crate::git::shell::git_cli::{GitShellError, ShellGit};
 
+#[derive(Default)]
 pub struct Provider {
-}
-
-#[derive(Debug)]
-pub enum CliProviderError {
-    UnexpectedError(String)
+    pub repo: Repo
 }
 
 impl Provider {
     pub fn init() -> Result<Provider, CliProviderError> {
         let repo = Self::get_repo()?;
-        todo!()
+
+        Ok(Provider { repo })
     }
 
     fn get_repo() -> Result<Repo, CliProviderError> {
@@ -57,11 +58,5 @@ impl Provider {
             repo_name,
             repo_type
         })
-    }
-}
-
-impl From<GitShellError> for CliProviderError {
-    fn from(err: GitShellError) -> Self {
-        CliProviderError::UnexpectedError(format!("{}", err))
     }
 }

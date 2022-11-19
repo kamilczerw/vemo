@@ -8,6 +8,8 @@ use log::debug;
 use crate::git;
 use crate::git::{Git, GitClient};
 use crate::git::model::tag::Tag;
+use crate::git::provider::CliProvider;
+use crate::git::provider::error::GitProviderError;
 
 pub fn run(config: Config, name: &String, component: &Component, git_client: Box<dyn GitClient>) -> Result<(), CommandError>  {
     let format = config.format.clone();
@@ -49,7 +51,8 @@ pub fn run(config: Config, name: &String, component: &Component, git_client: Box
 }
 
 pub fn run_v2(config: Config, app_name: &str, component: &Component) -> Result<(), CommandError> {
-    let git = git::provider::new(&config)?;
+    let cli = CliProvider::init()?;
+    let git = git::provider::new(&cli, &config)?;
 
     let default_version = Version::parse("0.1.0").unwrap();
 
@@ -94,3 +97,9 @@ fn release(git_client: Box<dyn GitClient>, name: String, new_tag: Tag, body: Str
 
     Ok(())
 }
+
+// impl From<GitProviderError> for CommandError {
+//     fn from(error: GitProviderError) -> Self {
+//         CommandError::UnexpectedError(error.to_string())
+//     }
+// }

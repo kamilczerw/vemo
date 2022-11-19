@@ -8,12 +8,12 @@ mod config_test;
 
 pub static DEFAULT_TAG_FORMAT: &str = "{app_name}/v{version}";
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub struct AppConfig {
     pub path: Option<String>
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub struct Config {
     pub format: String,
     pub debug: bool,
