@@ -29,11 +29,11 @@ pub trait GitProvider: DowncastSync {
     fn release(&self, name: &str, tag: Tag, body: String) -> Result<(), GitProviderError>;
 }
 
+// Used for testing to test if the constructed provider is of the correct type
 impl_downcast!(sync GitProvider);
 
 
 pub fn new(cli: &CliProvider, config: &Config) -> Result<Box<dyn GitProvider>, GitProviderError> {
-
     match cli.repo.provider {
         Provider::Github => Ok(Box::new(github::Provider::new())),
         _ => Err(GitProviderError::ProviderNotSupported(cli.repo.provider.clone()))

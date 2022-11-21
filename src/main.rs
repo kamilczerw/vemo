@@ -4,6 +4,7 @@ mod commands;
 mod cfg;
 mod error;
 mod git;
+mod usecase;
 
 use std::process::exit;
 use clap::Parser;

@@ -5,9 +5,10 @@ pub mod error;
 #[cfg(test)]
 mod bump_test;
 
-use clap::{ArgEnum, Subcommand};
+use clap::{Subcommand};
+use clap::{Parser, ValueEnum};
 
-#[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, ArgEnum)]
+#[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, ValueEnum)]
 pub enum Component {
     Major,
     Minor,
@@ -27,7 +28,8 @@ pub enum Commands {
         name: String,
 
         /// Version component which will be bumped
-        #[clap(short, long, arg_enum, default_value = "minor")]
+        #[clap(short, long, default_value = "minor")]
+        #[arg(value_enum)]
         component: Component
     },
     BumpV2 {
@@ -35,7 +37,8 @@ pub enum Commands {
         name: String,
 
         /// Version component which will be bumped
-        #[clap(short, long, arg_enum, default_value = "minor")]
+        #[clap(short, long, default_value = "minor")]
+        #[arg(value_enum)]
         component: Component
     }
 }

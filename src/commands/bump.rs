@@ -1,12 +1,13 @@
 use std::io::stdin;
+
+use colored::Colorize;
+use log::debug;
 use semver::Version;
+
 use crate::cfg::Config;
 use crate::commands::Component;
 use crate::commands::error::CommandError;
-use colored::Colorize;
-use log::debug;
-use crate::git;
-use crate::git::{Git, GitClient};
+use crate::git::{Git, GitClient, provider};
 use crate::git::model::tag::Tag;
 use crate::git::provider::CliProvider;
 use crate::git::provider::error::GitProviderError;
@@ -52,7 +53,7 @@ pub fn run(config: Config, name: &String, component: &Component, git_client: Box
 
 pub fn run_v2(config: Config, app_name: &str, component: &Component) -> Result<(), CommandError> {
     let cli = CliProvider::init()?;
-    let git = git::provider::new(&cli, &config)?;
+    let git = provider::new(&cli, &config)?;
 
     let default_version = Version::parse("0.1.0").unwrap();
 

@@ -1,6 +1,7 @@
 use semver::Version;
 use std::fmt::{Display, Formatter};
 use crate::commands::Component;
+use crate::usecase::git_bump;
 
 #[derive(Debug, Clone, Eq, Ord, PartialEq)]
 pub struct Tag {
@@ -19,18 +20,26 @@ impl Tag {
         Tag::new(format, Self::raw_version(format, app_name, &version).as_str(), version, app_name)
     }
 
-    pub fn bump(mut self, component: &Component) -> Self {
+    pub fn bump_v2(mut self, component: &git_bump::Component) -> Self {
         let version = &self.version;
         let new_version = match component {
-            Component::Major => Version::new(version.major + 1, 0, 0),
-            Component::Minor => Version::new(version.major, version.minor + 1, 0),
-            Component::Patch => Version::new(version.major, version.minor, version.patch + 1),
+            git_bump::Component::Major => Version::new(version.major + 1, 0, 0),
+            git_bump::Component::Minor => Version::new(version.major, version.minor + 1, 0),
+            git_bump::Component::Patch => Version::new(version.major, version.minor, version.patch + 1),
         };
 
         self.version = new_version;
         self.raw = Self::raw_version(&self.format, &self.app_name, &self.version);
 
         self
+    }
+
+    pub fn bump(mut self, component: &Component) -> Self {
+        match component {
+            Component::Major => self.bump_v2(&git_bump::Component::Major),
+            Component::Minor => self.bump_v2(&git_bump::Component::Minor),
+            Component::Patch => self.bump_v2(&git_bump::Component::Patch),
+        }
     }
 
     pub fn formatted(&self) -> String {
