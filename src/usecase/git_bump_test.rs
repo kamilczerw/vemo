@@ -3,6 +3,7 @@ use crate::usecase::UseCase;
 use mockall::predicate::*;
 use rstest::{fixture, rstest};
 use semver::Version;
+use crate::cfg;
 use crate::git::model::tag::Tag;
 use crate::usecase::git_bump::MockGitDataProvider;
 use crate::usecase::git_bump::MockConfigDataProvider;
@@ -63,7 +64,7 @@ fn release_provider(mut empty_provider: MockGitDataProvider) -> MockGitDataProvi
 fn provider_with_commits(mut release_provider: MockGitDataProvider) -> MockGitDataProvider {
     release_provider
         .expect_get_commits()
-        // .with(eq(APP_NAME), eq("path"))
+        // .with(eq(Tag::new_with_format(FORMAT, APP_NAME, Version::new(1, 2, 4))), eq(Some(String::from("path"))))
         .times(1)
         .returning(|_, _| Ok( vec![
             commit("feat: add feature", "hash1", "author1"),
@@ -79,16 +80,27 @@ fn config() -> MockConfigDataProvider {
     MockConfigDataProvider::new()
 }
 
+#[fixture]
+fn app_config(mut config: MockConfigDataProvider) -> MockConfigDataProvider {
+    config
+        .expect_get_app_config()
+        .times(1)
+        .returning(|_| Ok(cfg::AppConfig {
+            path: Some(String::from("path")),
+        }));
+
+    config
+}
 
 #[rstest]
 fn when_app_name_and_component_are_provided_and_there_are_no_commits_then_version_should_be_bumped(
     mut release_provider: MockGitDataProvider,
-    mut config: MockConfigDataProvider
+    mut app_config: MockConfigDataProvider
 ) {
     release_provider.expect_release().times(0);
     release_provider.expect_get_commits().times(1).returning(|_, _| Ok(vec![]));
 
-    let use_case = use_case(release_provider, config);
+    let use_case = use_case(release_provider, app_config);
 
     let request = AppReleaseUseCaseRequest {
         app_name: APP_NAME.to_string(),
@@ -108,12 +120,12 @@ fn when_app_name_and_component_are_provided_and_there_are_no_commits_then_versio
 #[rstest]
 fn when_app_name_and_component_are_provided_and_there_are_commits_then_version_should_be_bumped(
     mut provider_with_commits: MockGitDataProvider,
-    mut config: MockConfigDataProvider
+    mut app_config: MockConfigDataProvider
 ) {
     provider_with_commits.expect_release().times(1).returning(|_, _, _| Ok(()));
     provider_with_commits.expect_compare_url().times(1).returning(|t1, t2| Some(format!("https://github.com/bla/{}/compare/{}...{}", APP_NAME, t1, t2)));
 
-    let use_case = use_case(provider_with_commits, config);
+    let use_case = use_case(provider_with_commits, app_config);
 
     let request = AppReleaseUseCaseRequest {
         app_name: APP_NAME.to_string(),
@@ -135,10 +147,36 @@ fn when_app_name_and_component_are_provided_and_there_are_commits_then_version_s
 #[rstest]
 fn when_app_name_and_component_are_provided_and_there_are_commits_but_no_compare_url_then_body_should_not_contain_compare_url(
     mut provider_with_commits: MockGitDataProvider,
+    mut app_config: MockConfigDataProvider
+) {
+    provider_with_commits.expect_release().times(1).returning(|_, _, _| Ok(()));
+    provider_with_commits.expect_compare_url().times(1).returning(|_, _| None);
+
+    let use_case = use_case(provider_with_commits, app_config);
+
+    let request = AppReleaseUseCaseRequest {
+        app_name: APP_NAME.to_string(),
+        component: Component::Patch
+    };
+
+    let mut expected_message = String::from("## What's Changed\n\n");
+    expected_message.push_str("* feat: add feature by author1\n");
+    expected_message.push_str("* fix: fix bug by author2\n");
+    expected_message.push_str("* chore: update dependencies by author3\n");
+
+    let result = use_case.execute(request).unwrap();
+    assert_eq!(result.tag, Tag::new_with_format(FORMAT, APP_NAME, Version::new(1, 2, 4)));
+    assert_eq!(result.body, expected_message);
+}
+
+#[rstest]
+fn when_there_is_no_path_in_app_config_the_path_should_not_be_passed(
+    mut provider_with_commits: MockGitDataProvider,
     mut config: MockConfigDataProvider
 ) {
     provider_with_commits.expect_release().times(1).returning(|_, _, _| Ok(()));
     provider_with_commits.expect_compare_url().times(1).returning(|_, _| None);
+    config.expect_get_app_config().times(1).returning(|_| Ok(cfg::AppConfig { path: None }));
 
     let use_case = use_case(provider_with_commits, config);
 

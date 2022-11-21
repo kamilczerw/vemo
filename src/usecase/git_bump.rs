@@ -1,5 +1,6 @@
 use mockall::automock;
-use semver::Version;
+use semver::{Op, Version};
+use crate::cfg::AppConfig;
 use crate::git::model::tag::Tag;
 use crate::usecase::UseCase;
 
@@ -21,7 +22,10 @@ impl UseCase<AppReleaseUseCaseRequest, AppReleaseUseCaseResponse, AppReleaseUseC
         let tag = Tag::new_with_format(self.format.as_str(), params.app_name.as_str(), version);
         let new_tag = tag.clone().bump_v2(&params.component);
 
-        let commits = self.git_provider.get_commits(&tag, "path")?;
+        let app_config = self.config_data_provider
+                .get_app_config(params.app_name.as_str())?;
+
+        let commits = self.git_provider.get_commits(&tag, app_config.path)?;
 
         if commits.is_empty() {
             return Err(AppReleaseUseCaseError::NoChanges)
@@ -84,13 +88,8 @@ pub struct Commit {
 pub trait GitDataProvider {
     fn find_latest_version(&self, app_name: &str) -> Result<Option<Version>, GitDataProviderError>;
     fn release(&self, name: &str, tag: &Tag, body: &String) -> Result<(), GitDataProviderError>;
-    fn get_commits(&self, tag: &Tag, path: &str) -> Result<Vec<Commit>, GitDataProviderError>;
+    fn get_commits(&self, tag: &Tag, path: Option<String>) -> Result<Vec<Commit>, GitDataProviderError>;
     fn compare_url(&self, tag: &Tag, new_tag: &Tag) -> Option<String>;
-}
-
-#[automock]
-pub trait ConfigDataProvider {
-
 }
 
 pub enum GitDataProviderError {
@@ -101,6 +100,23 @@ impl From<GitDataProviderError> for AppReleaseUseCaseError {
     fn from(error: GitDataProviderError) -> Self {
         match error {
             GitDataProviderError::UnexpectedError => AppReleaseUseCaseError::UnexpectedError
+        }
+    }
+}
+
+#[automock]
+pub trait ConfigDataProvider {
+    fn get_app_config(&self, app_name: &str) -> Result<AppConfig, ConfigDataProviderError>;
+}
+
+pub enum ConfigDataProviderError {
+    UnexpectedError
+}
+
+impl From<ConfigDataProviderError> for AppReleaseUseCaseError {
+    fn from(error: ConfigDataProviderError) -> Self {
+        match error {
+            ConfigDataProviderError::UnexpectedError => AppReleaseUseCaseError::UnexpectedError
         }
     }
 }
