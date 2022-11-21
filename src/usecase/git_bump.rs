@@ -5,6 +5,7 @@ use crate::usecase::UseCase;
 
 pub struct AppReleaseUseCase {
     pub(crate) git_provider: Box<dyn GitDataProvider>,
+    pub(crate) config_data_provider: Box<dyn ConfigDataProvider>,
     pub(crate) format: String,
 }
 
@@ -26,7 +27,14 @@ impl UseCase<AppReleaseUseCaseRequest, AppReleaseUseCaseResponse, AppReleaseUseC
             return Err(AppReleaseUseCaseError::NoChanges)
         }
 
-        let body = String::from("## What's Changed\n\n");
+        let mut body = String::from("## What's Changed\n\n");
+        for commit in commits {
+            body.push_str(&format!("* {} by {}\n", commit.message, commit.author));
+        }
+
+        if let Some(url) = self.git_provider.compare_url(&tag, &new_tag) {
+            body.push_str(&format!("\n\n**Full Changelog**: {}", url));
+        }
 
         self.git_provider.release(params.app_name.as_str(), &new_tag, &body)?;
 
@@ -54,7 +62,7 @@ pub struct AppReleaseUseCaseResponse {
     pub(crate) body: String
 }
 
-#[derive(Eq, PartialEq)]
+#[derive(Eq, PartialEq, Debug)]
 pub enum AppReleaseUseCaseError {
     UnexpectedError,
     NoChanges
@@ -77,6 +85,12 @@ pub trait GitDataProvider {
     fn find_latest_version(&self, app_name: &str) -> Result<Option<Version>, GitDataProviderError>;
     fn release(&self, name: &str, tag: &Tag, body: &String) -> Result<(), GitDataProviderError>;
     fn get_commits(&self, tag: &Tag, path: &str) -> Result<Vec<Commit>, GitDataProviderError>;
+    fn compare_url(&self, tag: &Tag, new_tag: &Tag) -> Option<String>;
+}
+
+#[automock]
+pub trait ConfigDataProvider {
+
 }
 
 pub enum GitDataProviderError {

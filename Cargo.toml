@@ -14,10 +14,13 @@ semver = "1.0.10"
 colored = "2.0.0"
 edit = "0.1.4"
 reqwest = { version = "0.11", features = ["blocking", "json"] }
-mockall = "0.11.1"
 serde_json = "1.0"
 dirs = "4.0.0"
 chrono = "0.4.19"
 log4rs = "1.1.1"
 log = "0.4.17"
 downcast-rs = "1.2.0"
+
+[dev-dependencies]
+rstest = "0.15.0"
+mockall = "0.11.1"
