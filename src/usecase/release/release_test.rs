@@ -133,3 +133,26 @@ fn when_find_latest_tag_fails_then_a_failure_should_be_returned(
         panic!("Expected error");
     }
 }
+
+#[rstest]
+fn when_find_latest_tag_returns_no_version_then_a_default_version_should_be_used(
+    mut provider_with_commits: MockReleaseDataProvider,
+    mut app_config: MockConfigDataProvider
+) {
+    provider_with_commits.expect_find_latest_version().times(1).returning(|_| Ok(None));
+    provider_with_commits.expect_compare_url().times(1).returning(|_, _| Ok(None));
+    provider_with_commits.expect_release().times(1).returning(|_, _, _| Ok(()));
+
+    let use_case = use_case(provider_with_commits, app_config);
+
+    let request = AppReleaseUseCaseRequest {
+        app_name: "no-version".to_string(),
+        component: Component::Patch
+    };
+
+    if let Ok(response) = use_case.execute(request) {
+        assert_eq!(response.tag.to_string(), "v0.1.1");
+    } else {
+        panic!("Should not fail");
+    }
+}

@@ -3,10 +3,15 @@ use semver::Version;
 use rstest::{fixture, rstest};
 use crate::usecase::release::{AppReleaseUseCase, AppReleaseUseCaseError, Commit, Component};
 use crate::cfg;
+use crate::git::model::tag::Tag;
 use crate::usecase::release::test::mock::{MockReleaseDataProvider, MockConfigDataProvider};
 
 pub const APP_NAME: &str = "app";
 pub const FORMAT: &str = "v{version}";
+
+pub fn default_tag() -> Tag {
+    Tag::new_with_format(FORMAT, APP_NAME, Version::new(1, 2, 3))
+}
 
 #[fixture]
 pub fn empty_provider() -> MockReleaseDataProvider {
@@ -18,8 +23,7 @@ pub fn release_provider(mut empty_provider: MockReleaseDataProvider) -> MockRele
     empty_provider
         .expect_find_latest_version()
         .with(eq(APP_NAME))
-        .times(1)
-        .returning(|_| Ok(Some(Version::new(1, 2, 3))));
+        .returning(|_| Ok(Some(default_tag().version)));
 
     empty_provider
 }
@@ -28,8 +32,7 @@ pub fn release_provider(mut empty_provider: MockReleaseDataProvider) -> MockRele
 pub fn provider_with_commits(mut release_provider: MockReleaseDataProvider) -> MockReleaseDataProvider {
     release_provider
         .expect_get_commits()
-        // .with(eq(Tag::new_with_format(FORMAT, APP_NAME, Version::new(1, 2, 4))), eq(Some(String::from("path"))))
-        .times(1)
+        // .with(eq(default_tag()), eq(Some(String::from("path"))))
         .returning(|_, _| Ok( vec![
             commit("feat: add feature", "hash1", "author1"),
             commit("fix: fix bug", "hash2", "author2"),
