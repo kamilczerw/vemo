@@ -8,12 +8,13 @@ use crate::cfg::AppConfig;
 use crate::git::model::tag::Tag;
 use crate::usecase::UseCase;
 
+pub const DEFAULT_VERSION: Version = Version::new(0, 1, 0);
+
 pub struct AppReleaseUseCase {
     pub(crate) git_provider: Box<dyn GitDataProvider>,
     pub(crate) config_data_provider: Box<dyn ConfigDataProvider>,
     pub(crate) format: String,
 }
-
 
 pub struct AppReleaseUseCaseRequest {
     pub(crate) app_name: String,
