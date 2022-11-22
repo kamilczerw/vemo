@@ -1,20 +1,20 @@
 use mockall::predicate::eq;
 use semver::Version;
 use rstest::{fixture, rstest};
-use crate::usecase::release::{AppReleaseUseCase, AppReleaseUseCaseError, Commit, Component, MockGitDataProvider};
-use crate::usecase::release::MockConfigDataProvider;
+use crate::usecase::release::{AppReleaseUseCase, AppReleaseUseCaseError, Commit, Component};
 use crate::cfg;
+use crate::usecase::release::test::mock::{MockReleaseDataProvider, MockConfigDataProvider};
 
 pub const APP_NAME: &str = "app";
 pub const FORMAT: &str = "v{version}";
 
 #[fixture]
-pub fn empty_provider() -> MockGitDataProvider {
-    MockGitDataProvider::new()
+pub fn empty_provider() -> MockReleaseDataProvider {
+    MockReleaseDataProvider::new()
 }
 
 #[fixture]
-pub fn release_provider(mut empty_provider: MockGitDataProvider) -> MockGitDataProvider {
+pub fn release_provider(mut empty_provider: MockReleaseDataProvider) -> MockReleaseDataProvider {
     empty_provider
         .expect_find_latest_version()
         .with(eq(APP_NAME))
@@ -25,7 +25,7 @@ pub fn release_provider(mut empty_provider: MockGitDataProvider) -> MockGitDataP
 }
 
 #[fixture]
-pub fn provider_with_commits(mut release_provider: MockGitDataProvider) -> MockGitDataProvider {
+pub fn provider_with_commits(mut release_provider: MockReleaseDataProvider) -> MockReleaseDataProvider {
     release_provider
         .expect_get_commits()
         // .with(eq(Tag::new_with_format(FORMAT, APP_NAME, Version::new(1, 2, 4))), eq(Some(String::from("path"))))
@@ -57,7 +57,7 @@ pub fn app_config(mut config: MockConfigDataProvider) -> MockConfigDataProvider 
 }
 
 
-pub fn use_case(provider: MockGitDataProvider, config: MockConfigDataProvider) -> AppReleaseUseCase {
+pub fn use_case(provider: MockReleaseDataProvider, config: MockConfigDataProvider) -> AppReleaseUseCase {
     AppReleaseUseCase {
         git_provider: Box::new(provider),
         config_data_provider: Box::new(config),

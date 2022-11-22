@@ -4,7 +4,6 @@ mod usecase;
 #[cfg(test)] mod release_test;
 
 use semver::Version;
-use mockall::automock;
 use crate::cfg::AppConfig;
 use crate::git::model::tag::Tag;
 use crate::usecase::UseCase;
@@ -26,7 +25,6 @@ pub struct AppReleaseUseCaseResponse {
     pub(crate) body: String
 }
 
-#[automock]
 pub trait GitDataProvider {
     fn find_latest_version(&self, app_name: &str) -> Result<Option<Version>, GitDataProviderError>;
     fn release(&self, name: &str, tag: &Tag, body: &String) -> Result<(), GitDataProviderError>;
@@ -34,7 +32,6 @@ pub trait GitDataProvider {
     fn compare_url(&self, tag: &Tag, new_tag: &Tag) -> Result<Option<String>, GitDataProviderError>;
 }
 
-#[automock]
 pub trait ConfigDataProvider {
     fn get_app_config(&self, app_name: &str) -> Result<AppConfig, ConfigDataProviderError>;
 }

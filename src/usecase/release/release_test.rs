@@ -4,14 +4,14 @@ use rstest::rstest;
 use semver::Version;
 use crate::cfg;
 use crate::git::model::tag::Tag;
-use crate::usecase::release::{AppReleaseUseCaseError, Commit, Component, GitDataProviderError, MockGitDataProvider};
-use crate::usecase::release::MockConfigDataProvider;
+use crate::usecase::release::{AppReleaseUseCaseError, Commit, Component, GitDataProviderError};
 use crate::usecase::release::{AppReleaseUseCase, AppReleaseUseCaseRequest, ConfigDataProvider, GitDataProvider};
 use crate::usecase::release::test::fixtures::*;
+use crate::usecase::release::test::mock::{MockReleaseDataProvider, MockConfigDataProvider};
 
 #[rstest]
 fn when_app_name_and_component_are_provided_and_there_are_no_commits_then_version_should_be_bumped(
-    mut release_provider: MockGitDataProvider,
+    mut release_provider: MockReleaseDataProvider,
     mut app_config: MockConfigDataProvider
 ) {
     release_provider.expect_release().times(0);
@@ -36,7 +36,7 @@ fn when_app_name_and_component_are_provided_and_there_are_no_commits_then_versio
 
 #[rstest]
 fn when_app_name_and_component_are_provided_and_there_are_commits_then_version_should_be_bumped(
-    mut provider_with_commits: MockGitDataProvider,
+    mut provider_with_commits: MockReleaseDataProvider,
     mut app_config: MockConfigDataProvider
 ) {
     provider_with_commits.expect_release().times(1).returning(|_, _, _| Ok(()));
@@ -63,7 +63,7 @@ fn when_app_name_and_component_are_provided_and_there_are_commits_then_version_s
 
 #[rstest]
 fn when_app_name_and_component_are_provided_and_there_are_commits_but_no_compare_url_then_body_should_not_contain_compare_url(
-    mut provider_with_commits: MockGitDataProvider,
+    mut provider_with_commits: MockReleaseDataProvider,
     mut app_config: MockConfigDataProvider
 ) {
     provider_with_commits.expect_release().times(1).returning(|_, _, _| Ok(()));
@@ -88,7 +88,7 @@ fn when_app_name_and_component_are_provided_and_there_are_commits_but_no_compare
 
 #[rstest]
 fn when_there_is_no_path_in_app_config_the_path_should_not_be_passed(
-    mut provider_with_commits: MockGitDataProvider,
+    mut provider_with_commits: MockReleaseDataProvider,
     mut config: MockConfigDataProvider
 ) {
     provider_with_commits.expect_release().times(1).returning(|_, _, _| Ok(()));
@@ -114,7 +114,7 @@ fn when_there_is_no_path_in_app_config_the_path_should_not_be_passed(
 
 #[rstest]
 fn when_find_latest_tag_fails_then_a_failure_should_be_returned(
-    mut empty_provider: MockGitDataProvider,
+    mut empty_provider: MockReleaseDataProvider,
     mut config: MockConfigDataProvider
 ) {
     empty_provider.expect_find_latest_version().times(1)

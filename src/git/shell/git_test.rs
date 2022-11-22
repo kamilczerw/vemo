@@ -5,7 +5,7 @@ use crate::git::Git;
 use crate::git::git_provider::GitProvider;
 use crate::git::model::repo::RepoType;
 use crate::git::model::tag::Tag;
-use crate::git::shell::MockGitCli;
+use crate::git::shell::mock::MockGitCli;
 
 #[test]
 fn get_repo_info_should_return_repo_info_for_ssh_repo() {
