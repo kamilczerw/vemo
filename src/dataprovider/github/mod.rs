@@ -4,6 +4,8 @@ use crate::dataprovider::git::GitClient;
 use crate::git::model::tag::Tag;
 use crate::usecase::release::{Commit, GitDataProviderError, ReleaseDataProvider};
 use crate::dataprovider::git::GitDataProvider;
+use async_trait::async_trait;
+
 
 mod release_data_provider;
 mod dataprovider;
@@ -13,17 +15,30 @@ mod dataprovider;
 
 struct GithubDataProvider {
     git_client: GitDataProvider,
-    http_client: Box<dyn HttpClient>
+    http_client: Box<dyn HttpClient>,
+    github_api_url: String,
 }
 
+#[async_trait]
 pub trait HttpClient {
-    fn get(&self, url: &str) -> Result<String, HttpClientError>;
+    async fn get(&self, url: &str) -> Result<String, HttpClientError>;
 }
 
 pub enum HttpClientError {
     UnexpectedError(String),
+    Unauthorized,
 }
 
 pub enum GithubDataProviderError {
     UnexpectedError(String),
+    Unauthorized,
+}
+
+impl From<HttpClientError> for GithubDataProviderError {
+    fn from(error: HttpClientError) -> Self {
+        match error {
+            HttpClientError::UnexpectedError(message) => GithubDataProviderError::UnexpectedError(message),
+            HttpClientError::Unauthorized => GithubDataProviderError::Unauthorized,
+        }
+    }
 }

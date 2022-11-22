@@ -8,7 +8,7 @@ use crate::dataprovider::git::GitClientError;
 use crate::dataprovider::git::test::MockGitClient;
 use crate::dataprovider::git::test::fixtures::git_client;
 use crate::dataprovider::git::test::fixtures::tag;
-use crate::dataprovider::github::GithubDataProvider;
+use crate::dataprovider::github::{GithubDataProvider, GithubDataProviderError};
 use crate::dataprovider::github::{HttpClient as HttpClientTrait, HttpClientError};
 use crate::git::model::tag::Tag;
 use crate::usecase::release::{GitDataProviderError, ReleaseDataProvider};
@@ -20,24 +20,23 @@ use crate::dataprovider::github::test::read_file;
 mock!{
     pub HttpClient {}
 
+    #[async_trait::async_trait]
     impl HttpClientTrait for HttpClient {
-        fn get(&self, url: &str) -> Result<String, HttpClientError>;
+        async fn get(&self, url: &str) -> Result<String, HttpClientError>;
     }
-
 }
-//
-//
+
 #[fixture]
 fn http() -> MockHttpClient {
     MockHttpClient::new()
 }
 
 #[rstest]
-async fn when_getting_latest_version_and_no_version_exists_then_return_none(
+async fn when_getting_commit_author_then_commit_author_should_be_returned(
     mut git_client: MockGitClient,
     mut http: MockHttpClient,
 ) {
-    let commit = commit("feat: add feature", "12163b7ef16ff917a1d55a59da89a812579d32b9", "author1");
+    let commit = commit("feat: add feature", "12163b7ef16ff917a1d55a59da89a812579d32b9", "kamilczerw");
     http
         .expect_get()
         .times(1)
@@ -50,9 +49,32 @@ async fn when_getting_latest_version_and_no_version_exists_then_return_none(
 
     assert!(result.is_ok());
     if let Ok(result) = result {
-        assert_eq!(result, "author1");
+        assert_eq!(result, "kamilczerw");
     }
 }
+
+#[rstest]
+async fn when_getting_commit_author_fails_then_commit_author_should_be_returned(
+    mut git_client: MockGitClient,
+    mut http: MockHttpClient,
+) {
+    let commit = commit("feat: add feature", "12163b7ef16ff917a1d55a59da89a812579d32b9", "kamilczerw");
+    http
+        .expect_get()
+        .times(1)
+        .returning(move |_| Err(HttpClientError::Unauthorized));
+
+    let git = GitDataProvider::new(Box::new(git_client));
+    let provider = GithubDataProvider::new(git, Box::new(http));
+
+    let result = provider.get_commit_author(&commit).await;
+
+    assert!(result.is_err());
+    if let Err(GithubDataProviderError::Unauthorized) = result {
+    } else { panic!("Expected error") }
+}
+
+
 //
 // #[rstest]
 // fn when_getting_latest_version_and_version_exists_then_return_version(

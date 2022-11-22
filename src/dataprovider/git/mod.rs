@@ -1,3 +1,4 @@
+use crate::git::model::repo::Repo;
 use crate::git::model::tag::Tag;
 use crate::usecase::release::{Commit, GitDataProviderError};
 
@@ -16,6 +17,7 @@ pub(crate) struct GitDataProvider {
 pub(crate) trait GitClient {
     fn get_tags(&self, app_name: &str) -> Result<Vec<Tag>, GitClientError>;
     fn get_commits(&self, tag: &Option<Tag>, path: Option<String>) -> Result<Vec<Commit>, GitClientError>;
+    fn get_repo(&self) -> Repo;
 }
 
 pub enum GitClientError {

@@ -7,6 +7,7 @@ use crate::git::model::tag::Tag;
 use crate::usecase::release::{GitDataProviderError, ReleaseDataProvider};
 use crate::usecase::release::test::fixtures::commit;
 use crate::usecase::release::Commit;
+use crate::git::model::repo::Repo;
 
 pub(crate) mod fixtures;
 
@@ -16,5 +17,6 @@ mock!{
     impl GitClientTrait for GitClient {
         fn get_tags(&self, app_name: &str) -> Result<Vec<Tag>, GitClientError>;
         fn get_commits(&self, tag: &Option<Tag>, path: Option<String>) -> Result<Vec<Commit>, GitClientError>;
+        fn get_repo(&self) -> Repo;
     }
 }
