@@ -11,6 +11,17 @@ pub struct Tag {
     pub app_name: String
 }
 
+impl Default for Tag {
+    fn default() -> Self {
+        Tag {
+            format: String::new(),
+            raw: String::new(),
+            version: Version::new(0, 1, 0),
+            app_name: String::new()
+        }
+    }
+}
+
 impl Tag {
     pub fn new(format: &str, raw: &str, version: Version, app_name: &str) -> Tag {
         Tag { format: format.to_string(), raw: raw.to_string(), version, app_name: app_name.to_string() }
