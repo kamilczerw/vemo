@@ -1,15 +1,13 @@
-use crate::usecase::git_bump::{Component, AppReleaseUseCase, AppReleaseUseCaseRequest, AppReleaseUseCaseError, GitDataProvider, GitDataProviderError, ConfigDataProvider, Commit};
 use crate::usecase::UseCase;
 use mockall::predicate::*;
-use rstest::{fixture, rstest};
+use rstest::rstest;
 use semver::Version;
 use crate::cfg;
 use crate::git::model::tag::Tag;
-use crate::usecase::git_bump::MockGitDataProvider;
-use crate::usecase::git_bump::MockConfigDataProvider;
-
-const APP_NAME: &str = "app";
-const FORMAT: &str = "v{version}";
+use crate::usecase::release::{AppReleaseUseCaseError, Commit, Component, MockGitDataProvider};
+use crate::usecase::release::MockConfigDataProvider;
+use crate::usecase::release::{AppReleaseUseCase, AppReleaseUseCaseRequest, ConfigDataProvider, GitDataProvider};
+use crate::usecase::release::test::fixtures::*;
 
 // fn setup_git_provider() -> MockGitDataProvider {
 //     let mut git_provider = MockGitDataProvider::new();
@@ -27,70 +25,7 @@ const FORMAT: &str = "v{version}";
 //     git_provider
 // }
 
-fn use_case(provider: MockGitDataProvider, config: MockConfigDataProvider) -> AppReleaseUseCase {
-    AppReleaseUseCase {
-        git_provider: Box::new(provider),
-        config_data_provider: Box::new(config),
-        format: String::from(FORMAT)
-    }
-}
 
-fn commit(message: &str, hash: &str, author: &str) -> Commit {
-    Commit {
-        message: String::from(message),
-        hash: String::from(hash),
-        author: String::from(author),
-    }
-}
-
-
-#[fixture]
-fn empty_provider() -> MockGitDataProvider {
-    MockGitDataProvider::new()
-}
-
-#[fixture]
-fn release_provider(mut empty_provider: MockGitDataProvider) -> MockGitDataProvider {
-    empty_provider
-        .expect_find_latest_version()
-        .with(eq(APP_NAME))
-        .times(1)
-        .returning(|_| Ok(Some(Version::new(1, 2, 3))));
-
-    empty_provider
-}
-
-#[fixture]
-fn provider_with_commits(mut release_provider: MockGitDataProvider) -> MockGitDataProvider {
-    release_provider
-        .expect_get_commits()
-        // .with(eq(Tag::new_with_format(FORMAT, APP_NAME, Version::new(1, 2, 4))), eq(Some(String::from("path"))))
-        .times(1)
-        .returning(|_, _| Ok( vec![
-            commit("feat: add feature", "hash1", "author1"),
-            commit("fix: fix bug", "hash2", "author2"),
-            commit("chore: update dependencies", "hash3", "author3"),
-        ]));
-
-    release_provider
-}
-
-#[fixture]
-fn config() -> MockConfigDataProvider {
-    MockConfigDataProvider::new()
-}
-
-#[fixture]
-fn app_config(mut config: MockConfigDataProvider) -> MockConfigDataProvider {
-    config
-        .expect_get_app_config()
-        .times(1)
-        .returning(|_| Ok(cfg::AppConfig {
-            path: Some(String::from("path")),
-        }));
-
-    config
-}
 
 #[rstest]
 fn when_app_name_and_component_are_provided_and_there_are_no_commits_then_version_should_be_bumped(
