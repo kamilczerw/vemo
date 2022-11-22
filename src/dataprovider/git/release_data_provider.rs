@@ -3,7 +3,7 @@ use crate::git::model::tag::Tag;
 use crate::usecase::release::{Commit, GitDataProviderError, ReleaseDataProvider};
 
 impl ReleaseDataProvider for GitDataProvider {
-    fn find_latest_version(&self, app_name: &str) -> Result<Option<Tag>, GitDataProviderError> {
+    fn find_latest_tag(&self, app_name: &str) -> Result<Option<Tag>, GitDataProviderError> {
         let mut versions = self.git_client.get_tags(app_name)?;
         versions.sort_by(|a, b| b.cmp(&a));
         let version = versions

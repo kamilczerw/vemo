@@ -3,8 +3,8 @@ use crate::git::model::tag::Tag;
 use crate::usecase::release::{Commit, GitDataProviderError, ReleaseDataProvider};
 
 impl ReleaseDataProvider for GithubDataProvider {
-    fn find_latest_version(&self, app_name: &str) -> Result<Option<Tag>, GitDataProviderError> {
-        todo!("Implement GithubDataProvider::find_latest_version")
+    fn find_latest_tag(&self, app_name: &str) -> Result<Option<Tag>, GitDataProviderError> {
+        self.git_client.find_latest_tag(app_name)
     }
 
     fn release(&self, _name: &str, _tag: &Tag, _body: &String) -> Result<(), GitDataProviderError> {

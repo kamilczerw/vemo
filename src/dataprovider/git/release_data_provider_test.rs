@@ -21,7 +21,7 @@ fn when_getting_latest_version_and_no_version_exists_then_return_none(
 
     let provider = GitDataProvider::new(Box::new(git_client));
 
-    let result = provider.find_latest_version("app");
+    let result = provider.find_latest_tag("app");
 
     assert!(result.is_ok());
     if let Ok(result) = result {
@@ -40,7 +40,7 @@ fn when_getting_latest_version_and_version_exists_then_return_version(
 
     let provider = GitDataProvider::new(Box::new(git_client));
 
-    let result = provider.find_latest_version("app");
+    let result = provider.find_latest_tag("app");
 
     assert!(result.is_ok());
     if let Ok(Some(tag)) = result {
@@ -61,7 +61,7 @@ fn when_getting_latest_version_and_git_client_fails_then_return_failure(
 
     let provider = GitDataProvider::new(Box::new(git_client));
 
-    let result = provider.find_latest_version("app");
+    let result = provider.find_latest_tag("app");
 
     assert!(result.is_err());
     if let Err(GitDataProviderError::UnexpectedError(message)) = result {

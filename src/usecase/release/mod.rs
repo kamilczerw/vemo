@@ -28,7 +28,7 @@ pub struct AppReleaseUseCaseResponse {
 }
 
 pub trait ReleaseDataProvider {
-    fn find_latest_version(&self, app_name: &str) -> Result<Option<Tag>, GitDataProviderError>;
+    fn find_latest_tag(&self, app_name: &str) -> Result<Option<Tag>, GitDataProviderError>;
     fn release(&self, name: &str, tag: &Tag, body: &String) -> Result<(), GitDataProviderError>;
     fn get_commits(&self, tag: &Option<Tag>, path: Option<String>) -> Result<Vec<Commit>, GitDataProviderError>;
     fn compare_url(&self, tag: &Option<Tag>, new_tag: &Tag) -> Result<Option<String>, GitDataProviderError>;

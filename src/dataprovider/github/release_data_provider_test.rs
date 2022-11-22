@@ -1,55 +1,58 @@
 use mockall::mock;
 use rstest::{fixture, rstest};
 use semver::Version;
+
 use crate::cfg::DEFAULT_TAG_FORMAT;
-use crate::dataprovider::github::{GithubClient as GithubClientTrait, GithubClientError, GithubDataProvider};
-use crate::dataprovider::git::test::{MockGitClient};
-use crate::dataprovider::git::test::fixtures::tag;
+use crate::dataprovider::git::{GitClient as GitClientTrait, GitDataProvider};
+use crate::dataprovider::git::GitClientError;
+use crate::dataprovider::git::test::MockGitClient;
 use crate::dataprovider::git::test::fixtures::git_client;
-use crate::dataprovider::git::GitClient as GitClientTrait;
+use crate::dataprovider::git::test::fixtures::tag;
+use crate::dataprovider::github::GithubDataProvider;
+use crate::dataprovider::github::{HttpClient as HttpClientTrait, HttpClientError};
 use crate::git::model::tag::Tag;
 use crate::usecase::release::{GitDataProviderError, ReleaseDataProvider};
-use crate::usecase::release::test::fixtures::commit;
 use crate::usecase::release::Commit;
-use crate::dataprovider::git::GitClientError;
+use crate::usecase::release::test::fixtures::commit;
+use ureq::Agent;
+use crate::dataprovider::github::test::read_file;
 
 mock!{
-    pub GithubClient {}
+    pub HttpClient {}
 
-    impl GithubClientTrait for GithubClient {
+    impl HttpClientTrait for HttpClient {
+        fn get(&self, url: &str) -> Result<String, HttpClientError>;
     }
 
-    impl GitClientTrait for GithubClient {
-        fn get_tags(&self, app_name: &str) -> Result<Vec<Tag>, GitClientError>;
-        fn get_commits(&self, tag: &Option<Tag>, path: Option<String>) -> Result<Vec<Commit>, GitClientError>;
-    }
 }
-
-
+//
+//
 #[fixture]
-fn github_client() -> MockGithubClient {
-    MockGithubClient::new()
+fn http() -> MockHttpClient {
+    MockHttpClient::new()
 }
 
-// #[rstest]
-// fn when_getting_latest_version_and_no_version_exists_then_return_none(
-//     mut git_client: MockGitClient,
-//     mut github_client: MockGithubClient,
-// ) {
-//     git_client
-//         .expect_get_tags()
-//         .times(1)
-//         .returning(|_| Ok(vec![]));
-//
-//     let provider = GithubDataProvider::new(Box::new(git_client), Box::new(github_client));
-//
-//     let result = provider.find_latest_version("app");
-//
-//     assert!(result.is_ok());
-//     if let Ok(result) = result {
-//         assert!(result.is_none());
-//     }
-// }
+#[rstest]
+async fn when_getting_latest_version_and_no_version_exists_then_return_none(
+    mut git_client: MockGitClient,
+    mut http: MockHttpClient,
+) {
+    let commit = commit("feat: add feature", "12163b7ef16ff917a1d55a59da89a812579d32b9", "author1");
+    http
+        .expect_get()
+        .times(1)
+        .returning(move |_| Ok(read_file("get_commit_response.json")));
+
+    let git = GitDataProvider::new(Box::new(git_client));
+    let provider = GithubDataProvider::new(git, Box::new(http));
+
+    let result = provider.get_commit_author(&commit).await;
+
+    assert!(result.is_ok());
+    if let Ok(result) = result {
+        assert_eq!(result, "author1");
+    }
+}
 //
 // #[rstest]
 // fn when_getting_latest_version_and_version_exists_then_return_version(

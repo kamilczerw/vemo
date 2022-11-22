@@ -11,7 +11,7 @@ use crate::usecase::UseCase;
 ///  - `component` - version component to be bumped
 impl UseCase<AppReleaseUseCaseRequest, AppReleaseUseCaseResponse, AppReleaseUseCaseError> for AppReleaseUseCase {
     fn execute(&self, params: AppReleaseUseCaseRequest) -> Result<AppReleaseUseCaseResponse, AppReleaseUseCaseError> {
-        let tag = self.release_data_provider.find_latest_version(&params.app_name)?;
+        let tag = self.release_data_provider.find_latest_tag(&params.app_name)?;
 
         let new_tag = match tag.clone() {
             Some(latest) => latest.bump_v2(&params.component),

@@ -22,7 +22,7 @@ pub fn empty_provider() -> MockReleaseDataProvider {
 #[fixture]
 pub fn release_provider(mut empty_provider: MockReleaseDataProvider) -> MockReleaseDataProvider {
     empty_provider
-        .expect_find_latest_version()
+        .expect_find_latest_tag()
         .with(eq(APP_NAME))
         .returning(|_| Ok(Some(default_tag())));
 

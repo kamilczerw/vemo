@@ -9,7 +9,7 @@ mod git_data_provider;
 pub(crate) mod test;
 
 
-struct GitDataProvider {
+pub(crate) struct GitDataProvider {
     git_client: Box<dyn GitClient>
 }
 

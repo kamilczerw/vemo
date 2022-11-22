@@ -118,7 +118,7 @@ fn when_find_latest_tag_fails_then_a_failure_should_be_returned(
     mut empty_provider: MockReleaseDataProvider,
     config: MockConfigDataProvider
 ) {
-    empty_provider.expect_find_latest_version().times(1)
+    empty_provider.expect_find_latest_tag().times(1)
         .returning(|_| Err(GitDataProviderError::UnexpectedError("Failed to get latest version".to_string())));
 
     let use_case = use_case(empty_provider, config);
@@ -140,7 +140,7 @@ fn when_find_latest_tag_returns_no_version_then_a_default_version_should_be_used
     mut provider_with_commits: MockReleaseDataProvider,
     app_config: MockConfigDataProvider
 ) {
-    provider_with_commits.expect_find_latest_version().times(1).returning(|_| Ok(None));
+    provider_with_commits.expect_find_latest_tag().times(1).returning(|_| Ok(None));
     provider_with_commits.expect_compare_url().times(1).returning(|_, _| Ok(None));
     provider_with_commits.expect_release().times(1).returning(|_, _, _| Ok(()));
 
@@ -165,7 +165,7 @@ fn when_getting_config_fails_then_unexpected_error_should_be_returned(
 ) {
     config.expect_get_app_config().times(1)
         .returning(|_| Err(ConfigDataProviderError::UnexpectedError("Failed to get config".to_string())));
-    provider_with_commits.expect_find_latest_version().times(1).returning(|_| Ok(None));
+    provider_with_commits.expect_find_latest_tag().times(1).returning(|_| Ok(None));
 
     let use_case = use_case(provider_with_commits, config);
 

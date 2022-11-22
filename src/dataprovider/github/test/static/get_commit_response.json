@@ -1,0 +1,122 @@
+{
+  "sha": "12163b7ef16ff917a1d55a59da89a812579d32b9",
+  "node_id": "C_kwDOHiiMA9oAKDEyMTYzYjdlZjE2ZmY5MTdhMWQ1NWE1OWRhODlhODEyNTc5ZDMyYjk",
+  "commit": {
+    "author": {
+      "name": "Kamil Czerwiński",
+      "email": "kamil@czerwinski.dev",
+      "date": "2022-06-26T11:47:22Z"
+    },
+    "committer": {
+      "name": "Kamil Czerwiński",
+      "email": "kamil@czerwinski.dev",
+      "date": "2022-06-26T11:47:22Z"
+    },
+    "message": "Add tests to parse commit",
+    "tree": {
+      "sha": "e4c4ff4d66425df48bfcdc09cd3f0b38996c2851",
+      "url": "https://api.github.com/repos/kamilczerw/vemo/git/trees/e4c4ff4d66425df48bfcdc09cd3f0b38996c2851"
+    },
+    "url": "https://api.github.com/repos/kamilczerw/vemo/git/commits/12163b7ef16ff917a1d55a59da89a812579d32b9",
+    "comment_count": 0,
+    "verification": {
+      "verified": false,
+      "reason": "unsigned",
+      "signature": null,
+      "payload": null
+    }
+  },
+  "url": "https://api.github.com/repos/kamilczerw/vemo/commits/12163b7ef16ff917a1d55a59da89a812579d32b9",
+  "html_url": "https://github.com/kamilczerw/vemo/commit/12163b7ef16ff917a1d55a59da89a812579d32b9",
+  "comments_url": "https://api.github.com/repos/kamilczerw/vemo/commits/12163b7ef16ff917a1d55a59da89a812579d32b9/comments",
+  "author": {
+    "login": "kamilczerw",
+    "id": 6637762,
+    "node_id": "MDQ6VXNlcjY2Mzc3NjI=",
+    "avatar_url": "https://avatars.githubusercontent.com/u/6637762?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/kamilczerw",
+    "html_url": "https://github.com/kamilczerw",
+    "followers_url": "https://api.github.com/users/kamilczerw/followers",
+    "following_url": "https://api.github.com/users/kamilczerw/following{/other_user}",
+    "gists_url": "https://api.github.com/users/kamilczerw/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/kamilczerw/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/kamilczerw/subscriptions",
+    "organizations_url": "https://api.github.com/users/kamilczerw/orgs",
+    "repos_url": "https://api.github.com/users/kamilczerw/repos",
+    "events_url": "https://api.github.com/users/kamilczerw/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/kamilczerw/received_events",
+    "type": "User",
+    "site_admin": false
+  },
+  "committer": {
+    "login": "kamilczerw",
+    "id": 6637762,
+    "node_id": "MDQ6VXNlcjY2Mzc3NjI=",
+    "avatar_url": "https://avatars.githubusercontent.com/u/6637762?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/kamilczerw",
+    "html_url": "https://github.com/kamilczerw",
+    "followers_url": "https://api.github.com/users/kamilczerw/followers",
+    "following_url": "https://api.github.com/users/kamilczerw/following{/other_user}",
+    "gists_url": "https://api.github.com/users/kamilczerw/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/kamilczerw/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/kamilczerw/subscriptions",
+    "organizations_url": "https://api.github.com/users/kamilczerw/orgs",
+    "repos_url": "https://api.github.com/users/kamilczerw/repos",
+    "events_url": "https://api.github.com/users/kamilczerw/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/kamilczerw/received_events",
+    "type": "User",
+    "site_admin": false
+  },
+  "parents": [
+    {
+      "sha": "5088ecaddd16f3c7e959e05db4b3826f84b11acb",
+      "url": "https://api.github.com/repos/kamilczerw/vemo/commits/5088ecaddd16f3c7e959e05db4b3826f84b11acb",
+      "html_url": "https://github.com/kamilczerw/vemo/commit/5088ecaddd16f3c7e959e05db4b3826f84b11acb"
+    }
+  ],
+  "stats": {
+    "total": 27,
+    "additions": 20,
+    "deletions": 7
+  },
+  "files": [
+    {
+      "sha": "06349b03311b931a87658a8433270893bc320178",
+      "filename": "src/commands/shell/git/commit.rs",
+      "status": "modified",
+      "additions": 16,
+      "deletions": 6,
+      "changes": 22,
+      "blob_url": "https://github.com/kamilczerw/vemo/blob/12163b7ef16ff917a1d55a59da89a812579d32b9/src%2Fcommands%2Fshell%2Fgit%2Fcommit.rs",
+      "raw_url": "https://github.com/kamilczerw/vemo/raw/12163b7ef16ff917a1d55a59da89a812579d32b9/src%2Fcommands%2Fshell%2Fgit%2Fcommit.rs",
+      "contents_url": "https://api.github.com/repos/kamilczerw/vemo/contents/src%2Fcommands%2Fshell%2Fgit%2Fcommit.rs?ref=12163b7ef16ff917a1d55a59da89a812579d32b9",
+      "patch": "@@ -5,23 +5,33 @@ use crate::commands::error::CommandError;\n pub struct Commit {\n     pub hash: String,\n     pub message: String,\n-    pub author: String,\n+    pub author: Author,\n     pub date: chrono::DateTime<chrono::Utc>\n }\n \n+#[derive(Debug, Clone, Eq, Ord, PartialEq, PartialOrd)]\n+pub struct Author {\n+    pub name: String,\n+    pub email: String\n+}\n+\n impl Commit {\n     /// Create a new commit from a git log line\n-    /// format:%aN;%aE;%H;%s;%cI\n+    /// format:%H;%aN;%aE;%s;%cI\n     pub(crate) fn from_line(line_output: &str) -> Result<Self, CommandError> {\n         let mut line = line_output.to_string();\n         line.retain(|c| c != '\\n');\n         let mut parts = line.split(';');\n         let hash = parts.next().ok_or(CommandError::ShellError(\"Failed to parse commit hash\".to_string()))?.to_string();\n+        let author_name = parts.next().ok_or(CommandError::ShellError(\"Failed to parse commit author's name\".to_string()))?.to_string();\n+        let author_email = parts.next().ok_or(CommandError::ShellError(\"Failed to parse commit author's email\".to_string()))?.to_string();\n         let message = parts.next().ok_or(CommandError::ShellError(\"Failed to parse commit message\".to_string()))?.to_string();\n-        let author = parts.next().ok_or(CommandError::ShellError(\"Failed to parse commit author\".to_string()))?.to_string();\n         let date_string = parts.next().ok_or(CommandError::ShellError(\"Failed to parse commit date\".to_string()))?;\n-        let date = chrono::DateTime::parse_from_str(date_string, \"%Y-%m-%d %H:%M:%S %z\")?.with_timezone(&chrono::Utc);\n-\n+        let date = chrono::DateTime::parse_from_str(date_string, \"%Y-%m-%dT%H:%M:%S%z\")?.with_timezone(&chrono::Utc);\n+        let author = Author {\n+            name: author_name,\n+            email: author_email\n+        };\n         Ok(Self {\n             hash,\n             message,\n@@ -33,6 +43,6 @@ impl Commit {\n \n impl From<ParseError> for CommandError {\n     fn from(e: ParseError) -> Self {\n-        CommandError::ParseError(e.to_string())\n+        CommandError::ParseError(format!(\"Failed to parse date, reason: {:?}\", e))\n     }\n }"
+    },
+    {
+      "sha": "45e9863824f8949decc7bef90009be0aad13c5d5",
+      "filename": "src/commands/shell/git/mod.rs",
+      "status": "modified",
+      "additions": 3,
+      "deletions": 0,
+      "changes": 3,
+      "blob_url": "https://github.com/kamilczerw/vemo/blob/12163b7ef16ff917a1d55a59da89a812579d32b9/src%2Fcommands%2Fshell%2Fgit%2Fmod.rs",
+      "raw_url": "https://github.com/kamilczerw/vemo/raw/12163b7ef16ff917a1d55a59da89a812579d32b9/src%2Fcommands%2Fshell%2Fgit%2Fmod.rs",
+      "contents_url": "https://api.github.com/repos/kamilczerw/vemo/contents/src%2Fcommands%2Fshell%2Fgit%2Fmod.rs?ref=12163b7ef16ff917a1d55a59da89a812579d32b9",
+      "patch": "@@ -10,3 +10,6 @@ pub use repo::Repo;\n pub use repo::RepoType;\n pub use git_provider::GitProvider;\n pub use git::Git;\n+\n+#[cfg(test)]\n+mod commit_test;"
+    },
+    {
+      "sha": "f0a832eec5ec76306e463780fd8d17972e3beb27",
+      "filename": "src/commands/shell/git_cli.rs",
+      "status": "modified",
+      "additions": 1,
+      "deletions": 1,
+      "changes": 2,
+      "blob_url": "https://github.com/kamilczerw/vemo/blob/12163b7ef16ff917a1d55a59da89a812579d32b9/src%2Fcommands%2Fshell%2Fgit_cli.rs",
+      "raw_url": "https://github.com/kamilczerw/vemo/raw/12163b7ef16ff917a1d55a59da89a812579d32b9/src%2Fcommands%2Fshell%2Fgit_cli.rs",
+      "contents_url": "https://api.github.com/repos/kamilczerw/vemo/contents/src%2Fcommands%2Fshell%2Fgit_cli.rs?ref=12163b7ef16ff917a1d55a59da89a812579d32b9",
+      "patch": "@@ -24,7 +24,7 @@ impl GitCli for ShellGit {\n         // %s - Subject\n         // %H - Hash\n         // %cI - Commit date ISO8601\n-        let format = \"--pretty=format:%aN;%aE;%H;%s;%cI\";\n+        let format = \"--pretty=format:%H;%aN;%aE;%s;%cI\";\n         let tags = format!(\"HEAD..{}\", tag);\n         let git_command = vec![\n             \"log\","
+    }
+  ]
+}

@@ -1,41 +1,29 @@
+use std::time::Duration;
+use ureq::Agent;
 use crate::dataprovider::git::GitClient;
 use crate::git::model::tag::Tag;
-use crate::usecase::release::{Commit, GitDataProviderError};
+use crate::usecase::release::{Commit, GitDataProviderError, ReleaseDataProvider};
+use crate::dataprovider::git::GitDataProvider;
 
 mod release_data_provider;
+mod dataprovider;
 
 #[cfg(test)] mod release_data_provider_test;
+#[cfg(test)] mod test;
 
 struct GithubDataProvider {
-    git_client: Box<dyn GitClient>,
-    github_client: Box<dyn GithubClient>
+    git_client: GitDataProvider,
+    http_client: Box<dyn HttpClient>
 }
 
-// impl GithubDataProvider {
-//     pub fn new(git: Box<dyn GitClient>, github: Box<dyn GithubClient>) -> GithubDataProvider {
-//         Self { git_client: git, github_client: github }
-//     }
-// }
-
-impl GithubDataProvider {
-    pub fn new(git_client: Box<dyn GitClient>, github: Box<dyn GithubClient>) -> GithubDataProvider {
-        Self { git_client, github_client: github }
-    }
+pub trait HttpClient {
+    fn get(&self, url: &str) -> Result<String, HttpClientError>;
 }
 
-trait GithubClient: GitClient {
-    // fn get_tags(&self, app_name: &str) -> Result<Vec<Tag>, GithubClientError>;
-    // fn get_commits(&self, tag: &Option<Tag>, path: Option<String>) -> Result<Vec<Commit>, GithubClientError>;
-}
-
-pub enum GithubClientError {
+pub enum HttpClientError {
     UnexpectedError(String),
 }
 
-impl From<GithubClientError> for GitDataProviderError {
-    fn from(error: GithubClientError) -> Self {
-        match error {
-            GithubClientError::UnexpectedError(message) => GitDataProviderError::UnexpectedError(message)
-        }
-    }
+pub enum GithubDataProviderError {
+    UnexpectedError(String),
 }
