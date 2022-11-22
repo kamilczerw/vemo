@@ -4,28 +4,10 @@ use rstest::rstest;
 use semver::Version;
 use crate::cfg;
 use crate::git::model::tag::Tag;
-use crate::usecase::release::{AppReleaseUseCaseError, Commit, Component, MockGitDataProvider};
+use crate::usecase::release::{AppReleaseUseCaseError, Commit, Component, GitDataProviderError, MockGitDataProvider};
 use crate::usecase::release::MockConfigDataProvider;
 use crate::usecase::release::{AppReleaseUseCase, AppReleaseUseCaseRequest, ConfigDataProvider, GitDataProvider};
 use crate::usecase::release::test::fixtures::*;
-
-// fn setup_git_provider() -> MockGitDataProvider {
-//     let mut git_provider = MockGitDataProvider::new();
-//     git_provider
-//         .expect_find_latest_version()
-//         .with(eq(APP_NAME))
-//         .times(1)
-//         .returning(|_| Ok(Some(Version::new(1, 2, 3))));
-//     // git_provider
-//     //     .expect_release()
-//     //     .with(eq(APP_NAME), eq(Tag::new_with_format(FORMAT, APP_NAME, Version::new(1, 2, 4))), eq(String::from("## What's Changed\n\n")))
-//     //     .times(1)
-//     //     .returning(|_, _, _| Ok(()));
-//
-//     git_provider
-// }
-
-
 
 #[rstest]
 fn when_app_name_and_component_are_provided_and_there_are_no_commits_then_version_should_be_bumped(
@@ -58,7 +40,7 @@ fn when_app_name_and_component_are_provided_and_there_are_commits_then_version_s
     mut app_config: MockConfigDataProvider
 ) {
     provider_with_commits.expect_release().times(1).returning(|_, _, _| Ok(()));
-    provider_with_commits.expect_compare_url().times(1).returning(|t1, t2| Some(format!("https://github.com/bla/{}/compare/{}...{}", APP_NAME, t1, t2)));
+    provider_with_commits.expect_compare_url().times(1).returning(|t1, t2| Ok(Some(format!("https://github.com/bla/{}/compare/{}...{}", APP_NAME, t1, t2))));
 
     let use_case = use_case(provider_with_commits, app_config);
 
@@ -85,7 +67,7 @@ fn when_app_name_and_component_are_provided_and_there_are_commits_but_no_compare
     mut app_config: MockConfigDataProvider
 ) {
     provider_with_commits.expect_release().times(1).returning(|_, _, _| Ok(()));
-    provider_with_commits.expect_compare_url().times(1).returning(|_, _| None);
+    provider_with_commits.expect_compare_url().times(1).returning(|_, _| Ok(None));
 
     let use_case = use_case(provider_with_commits, app_config);
 
@@ -110,7 +92,7 @@ fn when_there_is_no_path_in_app_config_the_path_should_not_be_passed(
     mut config: MockConfigDataProvider
 ) {
     provider_with_commits.expect_release().times(1).returning(|_, _, _| Ok(()));
-    provider_with_commits.expect_compare_url().times(1).returning(|_, _| None);
+    provider_with_commits.expect_compare_url().times(1).returning(|_, _| Ok(None));
     config.expect_get_app_config().times(1).returning(|_| Ok(cfg::AppConfig { path: None }));
 
     let use_case = use_case(provider_with_commits, config);
@@ -128,4 +110,26 @@ fn when_there_is_no_path_in_app_config_the_path_should_not_be_passed(
     let result = use_case.execute(request).unwrap();
     assert_eq!(result.tag, Tag::new_with_format(FORMAT, APP_NAME, Version::new(1, 2, 4)));
     assert_eq!(result.body, expected_message);
+}
+
+#[rstest]
+fn when_find_latest_tag_fails_then_a_failure_should_be_returned(
+    mut empty_provider: MockGitDataProvider,
+    mut config: MockConfigDataProvider
+) {
+    empty_provider.expect_find_latest_version().times(1)
+        .returning(|_| Err(GitDataProviderError::UnexpectedError("Failed to get latest version".to_string())));
+
+    let use_case = use_case(empty_provider, config);
+
+    let request = AppReleaseUseCaseRequest {
+        app_name: APP_NAME.to_string(),
+        component: Component::Patch
+    };
+
+    if let Err(AppReleaseUseCaseError::UnexpectedError(message)) = use_case.execute(request) {
+        assert_eq!(message, "Failed to get latest version");
+    } else {
+        panic!("Expected error");
+    }
 }

@@ -28,7 +28,7 @@ impl UseCase<AppReleaseUseCaseRequest, AppReleaseUseCaseResponse, AppReleaseUseC
             body.push_str(&format!("* {} by {}\n", commit.message, commit.author));
         }
 
-        if let Some(url) = self.git_provider.compare_url(&tag, &new_tag) {
+        if let Ok(Some(url)) = self.git_provider.compare_url(&tag, &new_tag) {
             body.push_str(&format!("\n\n**Full Changelog**: {}", url));
         }
 

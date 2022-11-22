@@ -31,7 +31,7 @@ pub trait GitDataProvider {
     fn find_latest_version(&self, app_name: &str) -> Result<Option<Version>, GitDataProviderError>;
     fn release(&self, name: &str, tag: &Tag, body: &String) -> Result<(), GitDataProviderError>;
     fn get_commits(&self, tag: &Tag, path: Option<String>) -> Result<Vec<Commit>, GitDataProviderError>;
-    fn compare_url(&self, tag: &Tag, new_tag: &Tag) -> Option<String>;
+    fn compare_url(&self, tag: &Tag, new_tag: &Tag) -> Result<Option<String>, GitDataProviderError>;
 }
 
 #[automock]
@@ -41,7 +41,7 @@ pub trait ConfigDataProvider {
 
 #[derive(Eq, PartialEq, Debug)]
 pub enum AppReleaseUseCaseError {
-    UnexpectedError,
+    UnexpectedError(String),
     NoChanges
 }
 
@@ -58,25 +58,25 @@ pub struct Commit {
 }
 
 pub enum GitDataProviderError {
-    UnexpectedError
+    UnexpectedError(String),
 }
 
 impl From<GitDataProviderError> for AppReleaseUseCaseError {
     fn from(error: GitDataProviderError) -> Self {
         match error {
-            GitDataProviderError::UnexpectedError => AppReleaseUseCaseError::UnexpectedError
+            GitDataProviderError::UnexpectedError(msg) => AppReleaseUseCaseError::UnexpectedError(msg)
         }
     }
 }
 
 pub enum ConfigDataProviderError {
-    UnexpectedError
+    UnexpectedError(String),
 }
 
 impl From<ConfigDataProviderError> for AppReleaseUseCaseError {
     fn from(error: ConfigDataProviderError) -> Self {
         match error {
-            ConfigDataProviderError::UnexpectedError => AppReleaseUseCaseError::UnexpectedError
+            ConfigDataProviderError::UnexpectedError(msg) => AppReleaseUseCaseError::UnexpectedError(msg)
         }
     }
 }
