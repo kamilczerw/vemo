@@ -5,7 +5,8 @@ use crate::git::model::tag::Tag;
 
 mod usecase;
 
-#[cfg(test)] mod test;
+#[cfg(test)]
+pub(crate) mod test;
 #[cfg(test)] mod release_test;
 
 pub const DEFAULT_VERSION: Version = Version::new(0, 1, 0);
@@ -49,6 +50,7 @@ pub enum Component {
     Patch
 }
 
+// TODO: Move to separate file
 pub struct Commit {
     pub hash: String,
     pub message: String,

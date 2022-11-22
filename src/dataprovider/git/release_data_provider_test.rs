@@ -5,28 +5,10 @@ use crate::cfg::DEFAULT_TAG_FORMAT;
 use crate::dataprovider::git::{GitClient as GitClientTrait, GitClientError, GitDataProvider};
 use crate::git::model::tag::Tag;
 use crate::usecase::release::{GitDataProviderError, ReleaseDataProvider};
-
-mock!{
-    pub GitClient {}
-
-    impl GitClientTrait for GitClient {
-        fn get_tags(&self, app_name: &str) -> Result<Vec<Tag>, GitClientError>;
-    }
-}
-
-fn tag(version: &str, app_name: &str) -> Tag {
-    Tag {
-        format: DEFAULT_TAG_FORMAT.to_string(),
-        raw: format!("{}-{}", app_name, version),
-        version: Version::parse(version).unwrap(),
-        app_name: app_name.to_string()
-    }
-}
-
-#[fixture]
-fn git_client() -> MockGitClient {
-    MockGitClient::new()
-}
+use crate::usecase::release::test::fixtures::commit;
+use crate::usecase::release::Commit;
+use crate::dataprovider::git::test::{fixtures, MockGitClient};
+use crate::dataprovider::git::test::fixtures::git_client;
 
 #[rstest]
 fn when_getting_latest_version_and_no_version_exists_then_return_none(
@@ -54,7 +36,7 @@ fn when_getting_latest_version_and_version_exists_then_return_version(
     git_client
         .expect_get_tags()
         .times(1)
-        .returning(|_| Ok(vec![tag("2.0.0", "app"), tag("1.0.0", "app")]));
+        .returning(|_| Ok(vec![fixtures::tag("2.0.0", "app"), fixtures::tag("1.0.0", "app")]));
 
     let provider = GitDataProvider::new(Box::new(git_client));
 
@@ -84,6 +66,29 @@ fn when_getting_latest_version_and_git_client_fails_then_return_failure(
     assert!(result.is_err());
     if let Err(GitDataProviderError::UnexpectedError(message)) = result {
         assert_eq!(message, "Unexpected error");
+    } else {
+        panic!("Expected error to be UnexpectedError");
+    }
+}
+
+#[rstest]
+fn when_getting_commits_then_commits_should_be_returned(
+    mut git_client: MockGitClient,
+) {
+    git_client
+        .expect_get_commits()
+        .times(1)
+        .returning(|_, _| Ok( vec![
+            commit("msg1", "hash1", "author1")
+        ]));
+
+    let provider = GitDataProvider::new(Box::new(git_client));
+
+    let result = provider.get_commits(&Some(fixtures::tag("1.0.0", "app")), Some("app".to_string()));
+
+    assert!(result.is_ok());
+    if let Ok(commits) = result {
+        assert_eq!(commits.len(), 1);
     } else {
         panic!("Expected error to be UnexpectedError");
     }

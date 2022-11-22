@@ -1,17 +1,21 @@
 use crate::git::model::tag::Tag;
-use crate::usecase::release::GitDataProviderError;
+use crate::usecase::release::{Commit, GitDataProviderError};
 
 mod release_data_provider;
+mod git_data_provider;
 
 #[cfg(test)] mod release_data_provider_test;
-mod git_data_provider;
+#[cfg(test)]
+pub(crate) mod test;
+
 
 struct GitDataProvider {
     git_client: Box<dyn GitClient>
 }
 
-trait GitClient {
+pub(crate) trait GitClient {
     fn get_tags(&self, app_name: &str) -> Result<Vec<Tag>, GitClientError>;
+    fn get_commits(&self, tag: &Option<Tag>, path: Option<String>) -> Result<Vec<Commit>, GitClientError>;
 }
 
 pub enum GitClientError {

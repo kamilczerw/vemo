@@ -13,15 +13,17 @@ impl ReleaseDataProvider for GitDataProvider {
         Ok(version)
     }
 
-    fn release(&self, name: &str, tag: &Tag, body: &String) -> Result<(), GitDataProviderError> {
-        todo!()
+    fn release(&self, _name: &str, _tag: &Tag, _body: &String) -> Result<(), GitDataProviderError> {
+        Err(GitDataProviderError::UnexpectedError("Operation unsupported".to_string()))
     }
 
     fn get_commits(&self, tag: &Option<Tag>, path: Option<String>) -> Result<Vec<Commit>, GitDataProviderError> {
-        todo!()
+        let commits = self.git_client.get_commits(tag, path)?;
+
+        Ok(commits)
     }
 
-    fn compare_url(&self, tag: &Option<Tag>, new_tag: &Tag) -> Result<Option<String>, GitDataProviderError> {
-        todo!()
+    fn compare_url(&self, _tag: &Option<Tag>, _new_tag: &Tag) -> Result<Option<String>, GitDataProviderError> {
+        Err(GitDataProviderError::UnexpectedError("Operation unsupported".to_string()))
     }
 }
