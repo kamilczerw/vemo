@@ -45,7 +45,7 @@ impl Tag {
         self
     }
 
-    pub fn bump(mut self, component: &Component) -> Self {
+    pub fn bump(self, component: &Component) -> Self {
         match component {
             Component::Major => self.bump_v2(&release::Component::Major),
             Component::Minor => self.bump_v2(&release::Component::Minor),

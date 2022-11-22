@@ -18,7 +18,6 @@ use model::commit::Commit;
 use model::repo::{Repo, RepoType};
 use shell::GitCli;
 use provider::Provider;
-use crate::git;
 
 pub trait GitClient {
     fn create_release(&self, name: String, tag: Tag, body: String) -> Result<(), GitClientError>;

@@ -1,4 +1,3 @@
-use crate::dataprovider;
 use crate::git::model::tag::Tag;
 use crate::usecase::release::GitDataProviderError;
 

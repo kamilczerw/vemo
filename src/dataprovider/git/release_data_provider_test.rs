@@ -4,7 +4,7 @@ use semver::Version;
 use crate::cfg::DEFAULT_TAG_FORMAT;
 use crate::dataprovider::git::{GitClient as GitClientTrait, GitClientError, GitDataProvider};
 use crate::git::model::tag::Tag;
-use crate::usecase::release::ReleaseDataProvider;
+use crate::usecase::release::{GitDataProviderError, ReleaseDataProvider};
 
 mock!{
     pub GitClient {}
@@ -61,9 +61,30 @@ fn when_getting_latest_version_and_version_exists_then_return_version(
     let result = provider.find_latest_version("app");
 
     assert!(result.is_ok());
-    if let Ok(Some(version)) = result {
-        assert_eq!(version, Version::parse("2.0.0").unwrap());
+    if let Ok(Some(tag)) = result {
+        assert_eq!(tag.version, Version::parse("2.0.0").unwrap());
     } else {
         panic!("Expected version to be Some");
+    }
+}
+
+#[rstest]
+fn when_getting_latest_version_and_git_client_fails_then_return_failure(
+    mut git_client: MockGitClient,
+) {
+    git_client
+        .expect_get_tags()
+        .times(1)
+        .returning(|_| Err(GitClientError::UnexpectedError("Unexpected error".to_string())));
+
+    let provider = GitDataProvider::new(Box::new(git_client));
+
+    let result = provider.find_latest_version("app");
+
+    assert!(result.is_err());
+    if let Err(GitDataProviderError::UnexpectedError(message)) = result {
+        assert_eq!(message, "Unexpected error");
+    } else {
+        panic!("Expected error to be UnexpectedError");
     }
 }

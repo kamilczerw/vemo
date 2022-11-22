@@ -1,16 +1,14 @@
-use semver::Version;
 use crate::dataprovider::git::GitDataProvider;
 use crate::git::model::tag::Tag;
 use crate::usecase::release::{Commit, GitDataProviderError, ReleaseDataProvider};
 
 impl ReleaseDataProvider for GitDataProvider {
-    fn find_latest_version(&self, app_name: &str) -> Result<Option<Version>, GitDataProviderError> {
+    fn find_latest_version(&self, app_name: &str) -> Result<Option<Tag>, GitDataProviderError> {
         let mut versions = self.git_client.get_tags(app_name)?;
-        versions.sort_by(|a, b| a.version.cmp(&b.version));
-        versions.reverse();
+        versions.sort_by(|a, b| b.cmp(&a));
         let version = versions
             .first()
-            .map(|tag| tag.version.clone());
+            .map(|tag| tag.clone());
 
         Ok(version)
     }
@@ -19,11 +17,11 @@ impl ReleaseDataProvider for GitDataProvider {
         todo!()
     }
 
-    fn get_commits(&self, tag: &Tag, path: Option<String>) -> Result<Vec<Commit>, GitDataProviderError> {
+    fn get_commits(&self, tag: &Option<Tag>, path: Option<String>) -> Result<Vec<Commit>, GitDataProviderError> {
         todo!()
     }
 
-    fn compare_url(&self, tag: &Tag, new_tag: &Tag) -> Result<Option<String>, GitDataProviderError> {
+    fn compare_url(&self, tag: &Option<Tag>, new_tag: &Tag) -> Result<Option<String>, GitDataProviderError> {
         todo!()
     }
 }

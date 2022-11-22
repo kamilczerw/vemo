@@ -1,13 +1,13 @@
-mod provider_test;
-pub(crate) mod error;
-
-use std::fmt::Display;
 use regex::Regex;
+
 use error::CliProviderError;
+
 use crate::git;
 use crate::git::model::repo::{Repo, RepoType};
-use crate::git::provider::error::GitProviderError;
-use crate::git::shell::git_cli::{GitShellError, ShellGit};
+use crate::git::shell::git_cli::ShellGit;
+
+mod provider_test;
+pub(crate) mod error;
 
 #[derive(Default)]
 pub struct Provider {

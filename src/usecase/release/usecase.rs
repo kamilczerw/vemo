@@ -1,4 +1,3 @@
-use semver::Version;
 use crate::git::model::tag::Tag;
 use crate::usecase::release::{AppReleaseUseCase, AppReleaseUseCaseError, AppReleaseUseCaseRequest, AppReleaseUseCaseResponse, DEFAULT_VERSION};
 use crate::usecase::UseCase;
@@ -12,8 +11,12 @@ use crate::usecase::UseCase;
 ///  - `component` - version component to be bumped
 impl UseCase<AppReleaseUseCaseRequest, AppReleaseUseCaseResponse, AppReleaseUseCaseError> for AppReleaseUseCase {
     fn execute(&self, params: AppReleaseUseCaseRequest) -> Result<AppReleaseUseCaseResponse, AppReleaseUseCaseError> {
-        let tag = self.get_latest_tag(&params.app_name)?;
-        let new_tag = tag.clone().bump_v2(&params.component);
+        let tag = self.release_data_provider.find_latest_version(&params.app_name)?;
+
+        let new_tag = match tag.clone() {
+            Some(latest) => latest.bump_v2(&params.component),
+            None => Tag::new_with_format(self.format.as_str(), &params.app_name, DEFAULT_VERSION)
+        };
 
         let app_config = self.config_data_provider
             .get_app_config(params.app_name.as_str())?;
@@ -37,19 +40,7 @@ impl UseCase<AppReleaseUseCaseRequest, AppReleaseUseCaseResponse, AppReleaseUseC
 }
 
 impl AppReleaseUseCase {
-    fn get_latest_tag(&self, app_name: &str) -> Result<Tag, AppReleaseUseCaseError> {
-        let latest_version = self.release_data_provider.find_latest_version(app_name)?;
-
-        let version = match latest_version {
-            Some(version) => version,
-            None => DEFAULT_VERSION
-        };
-        let tag = Tag::new_with_format(self.format.as_str(), app_name, version);
-
-        Ok(tag)
-    }
-
-    fn get_formatted_commits(&self, tag: &Tag, path: Option<String>) -> Result<String, AppReleaseUseCaseError> {
+    fn get_formatted_commits(&self, tag: &Option<Tag>, path: Option<String>) -> Result<String, AppReleaseUseCaseError> {
         let commits = self.release_data_provider.get_commits(tag, path)?;
 
         if commits.is_empty() {

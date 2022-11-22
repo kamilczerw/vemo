@@ -10,7 +10,6 @@ use crate::commands::error::CommandError;
 use crate::git::{Git, GitClient, provider};
 use crate::git::model::tag::Tag;
 use crate::git::provider::CliProvider;
-use crate::git::provider::error::GitProviderError;
 
 pub fn run(config: Config, name: &String, component: &Component, git_client: Box<dyn GitClient>) -> Result<(), CommandError>  {
     let format = config.format.clone();

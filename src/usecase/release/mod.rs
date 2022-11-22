@@ -1,12 +1,12 @@
+use semver::Version;
+
+use crate::cfg::AppConfig;
+use crate::git::model::tag::Tag;
+
 mod usecase;
 
 #[cfg(test)] mod test;
 #[cfg(test)] mod release_test;
-
-use semver::Version;
-use crate::cfg::AppConfig;
-use crate::git::model::tag::Tag;
-use crate::usecase::UseCase;
 
 pub const DEFAULT_VERSION: Version = Version::new(0, 1, 0);
 
@@ -27,10 +27,10 @@ pub struct AppReleaseUseCaseResponse {
 }
 
 pub trait ReleaseDataProvider {
-    fn find_latest_version(&self, app_name: &str) -> Result<Option<Version>, GitDataProviderError>;
+    fn find_latest_version(&self, app_name: &str) -> Result<Option<Tag>, GitDataProviderError>;
     fn release(&self, name: &str, tag: &Tag, body: &String) -> Result<(), GitDataProviderError>;
-    fn get_commits(&self, tag: &Tag, path: Option<String>) -> Result<Vec<Commit>, GitDataProviderError>;
-    fn compare_url(&self, tag: &Tag, new_tag: &Tag) -> Result<Option<String>, GitDataProviderError>;
+    fn get_commits(&self, tag: &Option<Tag>, path: Option<String>) -> Result<Vec<Commit>, GitDataProviderError>;
+    fn compare_url(&self, tag: &Option<Tag>, new_tag: &Tag) -> Result<Option<String>, GitDataProviderError>;
 }
 
 pub trait ConfigDataProvider {

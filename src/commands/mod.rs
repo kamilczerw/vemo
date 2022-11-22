@@ -1,12 +1,12 @@
+use clap::Subcommand;
+use clap::ValueEnum;
+
 pub mod bump;
 pub mod list;
 pub mod error;
 
 #[cfg(test)]
 mod bump_test;
-
-use clap::{Subcommand};
-use clap::{Parser, ValueEnum};
 
 #[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, ValueEnum)]
 pub enum Component {

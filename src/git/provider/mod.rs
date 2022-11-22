@@ -1,9 +1,6 @@
 use std::fmt::{Display, Formatter};
 use downcast_rs::{DowncastSync, impl_downcast};
 use crate::cfg::Config;
-use crate::git;
-use crate::git::{Git, git_provider};
-use crate::git::model::repo::Repo;
 use crate::git::model::tag::Tag;
 use crate::git::provider::error::GitProviderError;
 
@@ -33,7 +30,7 @@ pub trait GitProvider: DowncastSync {
 impl_downcast!(sync GitProvider);
 
 
-pub fn new(cli: &CliProvider, config: &Config) -> Result<Box<dyn GitProvider>, GitProviderError> {
+pub fn new(cli: &CliProvider, _config: &Config) -> Result<Box<dyn GitProvider>, GitProviderError> {
     match cli.repo.provider {
         Provider::Github => Ok(Box::new(github::Provider::new())),
         _ => Err(GitProviderError::ProviderNotSupported(cli.repo.provider.clone()))

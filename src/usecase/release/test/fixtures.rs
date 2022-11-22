@@ -1,10 +1,11 @@
 use mockall::predicate::eq;
+use rstest::fixture;
 use semver::Version;
-use rstest::{fixture, rstest};
-use crate::usecase::release::{AppReleaseUseCase, AppReleaseUseCaseError, Commit, Component};
+
 use crate::cfg;
 use crate::git::model::tag::Tag;
-use crate::usecase::release::test::mock::{MockReleaseDataProvider, MockConfigDataProvider};
+use crate::usecase::release::{AppReleaseUseCase, Commit};
+use crate::usecase::release::test::mock::{MockConfigDataProvider, MockReleaseDataProvider};
 
 pub const APP_NAME: &str = "app";
 pub const FORMAT: &str = "v{version}";
@@ -23,7 +24,7 @@ pub fn release_provider(mut empty_provider: MockReleaseDataProvider) -> MockRele
     empty_provider
         .expect_find_latest_version()
         .with(eq(APP_NAME))
-        .returning(|_| Ok(Some(default_tag().version)));
+        .returning(|_| Ok(Some(default_tag())));
 
     empty_provider
 }
