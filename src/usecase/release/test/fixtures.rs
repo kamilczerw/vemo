@@ -62,7 +62,7 @@ pub fn app_config(mut config: MockConfigDataProvider) -> MockConfigDataProvider 
 
 pub fn use_case(provider: MockReleaseDataProvider, config: MockConfigDataProvider) -> AppReleaseUseCase {
     AppReleaseUseCase {
-        git_provider: Box::new(provider),
+        release_data_provider: Box::new(provider),
         config_data_provider: Box::new(config),
         format: String::from(FORMAT)
     }

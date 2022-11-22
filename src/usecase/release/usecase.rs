@@ -23,11 +23,11 @@ impl UseCase<AppReleaseUseCaseRequest, AppReleaseUseCaseResponse, AppReleaseUseC
         let mut body = String::from("## What's Changed\n\n");
         body.push_str(&formatted_commits);
 
-        if let Ok(Some(url)) = self.git_provider.compare_url(&tag, &new_tag) {
+        if let Ok(Some(url)) = self.release_data_provider.compare_url(&tag, &new_tag) {
             body.push_str(&format!("\n\n**Full Changelog**: {}", url));
         }
 
-        self.git_provider.release(params.app_name.as_str(), &new_tag, &body)?;
+        self.release_data_provider.release(params.app_name.as_str(), &new_tag, &body)?;
 
         Ok(AppReleaseUseCaseResponse {
             tag: new_tag,
@@ -38,7 +38,7 @@ impl UseCase<AppReleaseUseCaseRequest, AppReleaseUseCaseResponse, AppReleaseUseC
 
 impl AppReleaseUseCase {
     fn get_latest_tag(&self, app_name: &str) -> Result<Tag, AppReleaseUseCaseError> {
-        let latest_version = self.git_provider.find_latest_version(app_name)?;
+        let latest_version = self.release_data_provider.find_latest_version(app_name)?;
 
         let version = match latest_version {
             Some(version) => version,
@@ -50,7 +50,7 @@ impl AppReleaseUseCase {
     }
 
     fn get_formatted_commits(&self, tag: &Tag, path: Option<String>) -> Result<String, AppReleaseUseCaseError> {
-        let commits = self.git_provider.get_commits(tag, path)?;
+        let commits = self.release_data_provider.get_commits(tag, path)?;
 
         if commits.is_empty() {
             return Err(AppReleaseUseCaseError::NoChanges)

@@ -5,7 +5,7 @@ use semver::Version;
 use crate::cfg;
 use crate::git::model::tag::Tag;
 use crate::usecase::release::{AppReleaseUseCaseError, Commit, Component, GitDataProviderError};
-use crate::usecase::release::{AppReleaseUseCase, AppReleaseUseCaseRequest, ConfigDataProvider, GitDataProvider};
+use crate::usecase::release::{AppReleaseUseCase, AppReleaseUseCaseRequest, ConfigDataProvider, ReleaseDataProvider};
 use crate::usecase::release::test::fixtures::*;
 use crate::usecase::release::test::mock::{MockReleaseDataProvider, MockConfigDataProvider};
 

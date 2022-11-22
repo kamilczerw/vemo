@@ -2,7 +2,7 @@ use mockall::mock;
 use semver::Version;
 use crate::cfg::AppConfig;
 use crate::git::model::tag::Tag;
-use crate::usecase::release::{Commit, ConfigDataProvider as ConfigDataProviderTrait, ConfigDataProviderError, GitDataProvider as GitDataProviderTrait, GitDataProviderError};
+use crate::usecase::release::{Commit, ConfigDataProvider as ConfigDataProviderTrait, ConfigDataProviderError, ReleaseDataProvider as GitDataProviderTrait, GitDataProviderError};
 
 mock!{
     pub ReleaseDataProvider {}

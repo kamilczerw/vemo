@@ -11,7 +11,7 @@ use crate::usecase::UseCase;
 pub const DEFAULT_VERSION: Version = Version::new(0, 1, 0);
 
 pub struct AppReleaseUseCase {
-    pub(crate) git_provider: Box<dyn GitDataProvider>,
+    pub(crate) release_data_provider: Box<dyn ReleaseDataProvider>,
     pub(crate) config_data_provider: Box<dyn ConfigDataProvider>,
     pub(crate) format: String,
 }
@@ -26,7 +26,7 @@ pub struct AppReleaseUseCaseResponse {
     pub(crate) body: String
 }
 
-pub trait GitDataProvider {
+pub trait ReleaseDataProvider {
     fn find_latest_version(&self, app_name: &str) -> Result<Option<Version>, GitDataProviderError>;
     fn release(&self, name: &str, tag: &Tag, body: &String) -> Result<(), GitDataProviderError>;
     fn get_commits(&self, tag: &Tag, path: Option<String>) -> Result<Vec<Commit>, GitDataProviderError>;
