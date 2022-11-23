@@ -1,8 +1,9 @@
 use semver::Version;
 use rstest::fixture;
 use crate::cfg::DEFAULT_TAG_FORMAT;
-use crate::git::model::repo::Repo;
+use crate::git::model::repo::{Repo, RepoType};
 use crate::git::model::tag::Tag;
+use crate::git::provider::Provider;
 use super::MockGitClient;
 
 pub fn tag(version: &str, app_name: &str) -> Tag {
@@ -22,10 +23,10 @@ pub(crate) fn empty_git_client() -> MockGitClient {
 #[fixture]
 pub(crate) fn git_client(mut empty_git_client: MockGitClient) -> MockGitClient {
     empty_git_client.expect_get_repo().returning(|| Repo {
-        raw_url: "".to_string(),
-        repo_name: "".to_string(),
-        provider: Default::default(),
-        repo_type: Default::default()
+        raw_url: "git@github.com:abc/def.git".to_string(),
+        repo_name: "abc/def".to_string(),
+        provider: Provider::Github,
+        repo_type: RepoType::Ssh
     });
 
     empty_git_client

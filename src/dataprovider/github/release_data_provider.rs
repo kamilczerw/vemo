@@ -24,7 +24,7 @@ impl ReleaseDataProvider for GithubDataProvider {
             Some(tag) => tag.to_string(),
             None => "main".to_string()
         };
-        let compare_url = format!("{}/compare/{}...{}", self.github_api_url, last_tag, new_tag);
+        let compare_url = format!("{}/compare/{}...{}", self.git_client.get_repo().http_url(), last_tag, new_tag);
         Ok(Some(compare_url))
     }
 }

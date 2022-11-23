@@ -128,7 +128,7 @@ async fn when_getting_compare_url_with_tag_then_correct_url_should_be_returned(
 
     assert!(result.is_ok());
     if let Ok(Some(url)) = result {
-        assert_eq!(url, "https://api.github.com/compare/app/v1.0.0...app/v1.1.0");
+        assert_eq!(url, "https://github.com/abc/def/compare/app/v1.0.0...app/v1.1.0");
     } else { panic!("Did not expect an error") }
 }
 
@@ -145,7 +145,7 @@ async fn when_getting_compare_url_with_no_tag_then_correct_url_should_be_returne
 
     assert!(result.is_ok());
     if let Ok(Some(url)) = result {
-        assert_eq!(url, "https://api.github.com/compare/main...app/v1.0.0");
+        assert_eq!(url, "https://github.com/abc/def/compare/main...app/v1.0.0");
     } else { panic!("Did not expect an error") }
 }
 
