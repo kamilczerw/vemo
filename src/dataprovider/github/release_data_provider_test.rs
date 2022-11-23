@@ -1,4 +1,4 @@
-use mockall::mock;
+use mockall::{mock, predicate};
 use rstest::{fixture, rstest};
 use semver::Version;
 
@@ -30,6 +30,11 @@ mock!{
 fn http() -> MockHttpClient {
     MockHttpClient::new()
 }
+
+fn commit_json(login: &str) -> String {
+    format!(r#"{{"author": {{"login": "{}"}}}}"#, login)
+}
+
 
 #[rstest]
 async fn when_getting_commit_author_then_commit_author_should_be_returned(
@@ -74,6 +79,40 @@ async fn when_getting_commit_author_fails_then_commit_author_should_be_returned(
     } else { panic!("Expected error") }
 }
 
+#[rstest]
+async fn when_getting_commits_author_should_be_fetched_in_background(
+    mut git_client: MockGitClient,
+    mut http: MockHttpClient,
+) {
+    let commits = vec![
+        commit("mgs1", "hash1", "author1"),
+        commit("mgs2", "hash2", "author2"),
+    ];
+    git_client
+        .expect_get_commits()
+        .returning(move |_, _| Ok(commits.clone()));
+    http
+        .expect_get()
+        .with(predicate::function(|url: &str| url.contains("hash1")))
+        .returning(move |_| Ok(commit_json("@author1")));
+
+    http
+        .expect_get()
+        .with(predicate::function(|url: &str| url.contains("hash2")))
+        .returning(move |_| Ok(commit_json("@author2")));
+
+    let git = GitDataProvider::new(Box::new(git_client));
+    let provider = GithubDataProvider::new(git, Box::new(http));
+
+    let result = provider.get_commits(&Some(Tag::default()), None);
+
+    assert!(result.is_ok());
+    if let Ok(commits) = result {
+        assert_eq!(commits.len(), 2);
+        assert_eq!(commits[0].author, "@author1");
+        assert_eq!(commits[1].author, "@author2");
+    } else { panic!("Expected error") }
+}
 
 //
 // #[rstest]

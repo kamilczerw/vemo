@@ -51,6 +51,7 @@ pub enum Component {
 }
 
 // TODO: Move to separate file
+#[derive(Clone)]
 pub struct Commit {
     pub hash: String,
     pub message: String,
