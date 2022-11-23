@@ -114,6 +114,41 @@ async fn when_getting_commits_author_should_be_fetched_in_background(
     } else { panic!("Expected error") }
 }
 
+#[rstest]
+async fn when_getting_compare_url_with_tag_then_correct_url_should_be_returned(
+    mut git_client: MockGitClient,
+    mut http: MockHttpClient,
+) {
+    let t1 = tag("1.0.0", "app");
+    let t2 = tag("1.1.0", "app");
+    let git = GitDataProvider::new(Box::new(git_client));
+    let provider = GithubDataProvider::new(git, Box::new(http));
+
+    let result = provider.compare_url(&Some(t1), &t2);
+
+    assert!(result.is_ok());
+    if let Ok(Some(url)) = result {
+        assert_eq!(url, "https://api.github.com/compare/app/v1.0.0...app/v1.1.0");
+    } else { panic!("Did not expect an error") }
+}
+
+#[rstest]
+async fn when_getting_compare_url_with_no_tag_then_correct_url_should_be_returned(
+    mut git_client: MockGitClient,
+    mut http: MockHttpClient,
+) {
+    let tag = tag("1.0.0", "app");
+    let git = GitDataProvider::new(Box::new(git_client));
+    let provider = GithubDataProvider::new(git, Box::new(http));
+
+    let result = provider.compare_url(&None, &tag);
+
+    assert!(result.is_ok());
+    if let Ok(Some(url)) = result {
+        assert_eq!(url, "https://api.github.com/compare/main...app/v1.0.0");
+    } else { panic!("Did not expect an error") }
+}
+
 //
 // #[rstest]
 // fn when_getting_latest_version_and_version_exists_then_return_version(

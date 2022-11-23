@@ -12,15 +12,20 @@ impl ReleaseDataProvider for GithubDataProvider {
     }
 
     fn release(&self, _name: &str, _tag: &Tag, _body: &String) -> Result<(), GitDataProviderError> {
-        todo!("Implement GithubDataProvider::find_latest_version")
+        todo!("Implement release")
     }
 
     fn get_commits(&self, tag: &Option<Tag>, path: Option<String>) -> Result<Vec<Commit>, GitDataProviderError> {
         task::block_on(self.get_commits_async(tag, path))
     }
 
-    fn compare_url(&self, _tag: &Option<Tag>, _new_tag: &Tag) -> Result<Option<String>, GitDataProviderError> {
-        todo!("Implement GithubDataProvider::find_latest_version")
+    fn compare_url(&self, tag: &Option<Tag>, new_tag: &Tag) -> Result<Option<String>, GitDataProviderError> {
+        let last_tag: String = match tag {
+            Some(tag) => tag.to_string(),
+            None => "main".to_string()
+        };
+        let compare_url = format!("{}/compare/{}...{}", self.github_api_url, last_tag, new_tag);
+        Ok(Some(compare_url))
     }
 }
 
